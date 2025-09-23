@@ -3,6 +3,68 @@
 Access *Xiaomi Mi Temperature and Humidity Monitor 2* (*LYWSD03MMC*) device.
 
 
+*Xiaomi Mi Temperature and Humidity Monitor 2* is nice and cheap temperature and humidity sensor that allows to read 
+measurements remotely through *Bluetooth*. Device has very useful feature related to remote read: it is 
+able to store history of measurements.
+
+Every history entry consists of: 
+- entry index,
+- entry timestamp,
+- maximum and minimum tempreature,
+- maximum and minimum humidity.
+
+Min and max values are designated in the range on one hour, so history of two full days consists of 48 entries. 
+Unfortunately it is impossible to change given range of one hour.
+
+
+## Battery consumption
+
+Manufacturer claims that it works up to one year on battery. It becomes clear that it does not involve BT connections.
+
+#### Subscription
+
+Following listing presents measurements log in *subscription* mode:
+
+```
+received data: 2025-09-19 18:49:33.882839 Temp: 22.95C Humidity: 63% Battery: 89%
+received data: 2025-09-19 18:49:39.915296 Temp: 22.94C Humidity: 63% Battery: 89%
+received data: 2025-09-19 18:49:45.945374 Temp: 22.94C Humidity: 63% Battery: 89%
+...
+received data: 2025-09-19 19:09:02.709446 Temp: 22.98C Humidity: 63% Battery: 84%
+received data: 2025-09-19 19:09:08.739266 Temp: 23.01C Humidity: 63% Battery: 84%
+``` 
+Full log is accessible [here](examples/data_subscribe.txt).
+
+There are 195 samples in time span of 19 minutes and 35 seconds. Time step between each sample is 6 seconds (unable 
+to change). Battery drop is ~5%, so:
+- battery consumption is ~15.3% / h,
+- battery consumption is 0.026% per sample.
+
+#### Polling
+
+Following listing presents measurements log in polling mode:
+
+```
+[2025-09-19 01:11:57.829490] Temp: 25.16C Humidity: 58% Battery: 97%
+[2025-09-19 01:32:07.809542] Temp: 23.61C Humidity: 61% Battery: 96%
+[2025-09-19 01:52:15.276131] Temp: 23.36C Humidity: 62% Battery: 96%
+...
+[2025-09-19 14:39:02.402049] Temp: 22.88C Humidity: 62% Battery: 92%
+[2025-09-19 14:59:13.925522] Temp: 22.91C Humidity: 62% Battery: 91%
+
+``` 
+Full log is accessible [here](examples/data_poll.txt).
+
+There are 42 samples in time span of 13 hours, 47 minutes and 16 seconds. Time step between each sample is 20 minutes 
+(can be any duration). Battery drop is ~6%, so:
+- battery consumption is ~0.44% / h,
+- battery consumption is 0.14% per sample.
+
+It becomes clear that active polling consumes more energy than receiving notification. On other hand normally there is 
+no need to measure temperature every 6 seconds. Active polling to be less efficient than notifications has to be 
+performed with period shorter than **30 seconds**.
+
+
 ## Running the application
 
 Application accepts following arguments:
@@ -44,12 +106,14 @@ options:
 
 ```
 usage: python3 -m lywsd03mmcaccess.main readhistory [-h] --mac MAC
+                                                    [--recent RECENT]
 
 read history
 
 options:
-  -h, --help  show this help message and exit
-  --mac MAC   MAC address of device (default: None)
+  -h, --help       show this help message and exit
+  --mac MAC        MAC address of device (default: None)
+  --recent RECENT  Number of recent entries (default: None)
 ```
 
 <!-- insertend -->

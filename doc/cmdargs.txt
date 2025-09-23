@@ -34,10 +34,12 @@ options:
 
 ```
 usage: python3 -m lywsd03mmcaccess.main readhistory [-h] --mac MAC
+                                                    [--recent RECENT]
 
 read history
 
 options:
-  -h, --help  show this help message and exit
-  --mac MAC   MAC address of device (default: None)
+  -h, --help       show this help message and exit
+  --mac MAC        MAC address of device (default: None)
+  --recent RECENT  Number of recent entries (default: None)
 ```

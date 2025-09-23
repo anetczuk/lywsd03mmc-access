@@ -49,10 +49,17 @@ def process_read_data(args):
 
 def process_read_history(args):
     mac = args.mac
+    recent = args.recent
+    if recent is not None:
+        try:
+            recent = int(recent)
+        except ValueError:
+            _LOGGER.warning("unable to convert '%s' to integer", args.recent)
+            recent = None
     device = ThermometerAccess(mac)
 
     with device.connect():
-        data = device.get_history_measurements(recent_entries=5)
+        data = device.get_history_measurements(recent_entries=recent)
         for key, item in data.items():
             item[0] = item[0].strftime("%Y-%m-%d %H:%M:%S")
             print(f"Entry {key}: {item[0]} Tmin: {item[1]} Tmax: {item[3]} Hmin: {item[2]} Hmax: {item[4]}")
@@ -97,6 +104,7 @@ def main():
     subparser.description = description
     subparser.set_defaults(func=process_read_history)
     subparser.add_argument("--mac", action="store", required=True, help="MAC address of device")
+    subparser.add_argument("--recent", action="store", required=False, help="Number of recent entries")
     # subparser.add_argument("--outdir", action="store", required=True, help="Path to output directory")
 
     ## =================================================
