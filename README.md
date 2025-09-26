@@ -3,6 +3,20 @@
 Access *Xiaomi Mi Temperature and Humidity Monitor 2* (*LYWSD03MMC*) device.
 
 
+## Features
+
+Some features of the project:
+- reading current measurement,
+- reading history data,
+- storing history data to JSON,
+- plotting history data.
+
+Example of history chart:
+![History chart](examples/example_history.png "Temperature and humidity chart")
+
+
+## Device
+
 *Xiaomi Mi Temperature and Humidity Monitor 2* is nice and cheap temperature and humidity sensor that allows to read 
 measurements remotely through *Bluetooth*. Device has very useful feature related to remote read: it is 
 able to store history of measurements.
@@ -139,12 +153,19 @@ options:
 
 ```
 usage: python3 -m lywsd03mmcaccess.main printhistory [-h] --histfile HISTFILE
+                                                     [--recent RECENT]
+                                                     [--noprint] [--showchart]
+                                                     [--outchart OUTCHART]
 
 print history file
 
 options:
   -h, --help           show this help message and exit
   --histfile HISTFILE  Path to JSON file with history data (default: None)
+  --recent RECENT      Number of recent entries (default: None)
+  --noprint            Do not print raw data (default: False)
+  --showchart          Show history chart (default: False)
+  --outchart OUTCHART  Print history in form of chart (default: None)
 ```
 
 <!-- insertend -->

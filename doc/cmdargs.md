@@ -72,10 +72,17 @@ options:
 ## <a name="printhistory_help"></a> python3 -m lywsd03mmcaccess.main printhistory --help
 ```
 usage: python3 -m lywsd03mmcaccess.main printhistory [-h] --histfile HISTFILE
+                                                     [--recent RECENT]
+                                                     [--noprint] [--showchart]
+                                                     [--outchart OUTCHART]
 
 print history file
 
 options:
   -h, --help           show this help message and exit
   --histfile HISTFILE  Path to JSON file with history data (default: None)
+  --recent RECENT      Number of recent entries (default: None)
+  --noprint            Do not print raw data (default: False)
+  --showchart          Show history chart (default: False)
+  --outchart OUTCHART  Print history in form of chart (default: None)
 ```

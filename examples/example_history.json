@@ -1,0 +1,618 @@
+[
+  {
+    "timestamp": 1758596439.827353,
+    "Tmin": 15.9,
+    "Tmax": 16.3,
+    "Hmin": 66,
+    "Hmax": 68
+  },
+  {
+    "timestamp": 1758600039.827353,
+    "Tmin": 15.4,
+    "Tmax": 15.9,
+    "Hmin": 66,
+    "Hmax": 70
+  },
+  {
+    "timestamp": 1758603639.827353,
+    "Tmin": 15.0,
+    "Tmax": 15.4,
+    "Hmin": 65,
+    "Hmax": 69
+  },
+  {
+    "timestamp": 1758607239.827353,
+    "Tmin": 15.0,
+    "Tmax": 15.2,
+    "Hmin": 68,
+    "Hmax": 71
+  },
+  {
+    "timestamp": 1758610839.827353,
+    "Tmin": 14.7,
+    "Tmax": 15.2,
+    "Hmin": 68,
+    "Hmax": 72
+  },
+  {
+    "timestamp": 1758614439.827353,
+    "Tmin": 14.7,
+    "Tmax": 14.9,
+    "Hmin": 67,
+    "Hmax": 70
+  },
+  {
+    "timestamp": 1758618039.827353,
+    "Tmin": 14.8,
+    "Tmax": 15.6,
+    "Hmin": 63,
+    "Hmax": 69
+  },
+  {
+    "timestamp": 1758621639.827353,
+    "Tmin": 15.6,
+    "Tmax": 16.2,
+    "Hmin": 58,
+    "Hmax": 63
+  },
+  {
+    "timestamp": 1758625239.827353,
+    "Tmin": 16.1,
+    "Tmax": 16.4,
+    "Hmin": 57,
+    "Hmax": 61
+  },
+  {
+    "timestamp": 1758628839.827353,
+    "Tmin": 16.3,
+    "Tmax": 17.0,
+    "Hmin": 54,
+    "Hmax": 58
+  },
+  {
+    "timestamp": 1758632439.827353,
+    "Tmin": 16.9,
+    "Tmax": 17.4,
+    "Hmin": 53,
+    "Hmax": 57
+  },
+  {
+    "timestamp": 1758636039.827353,
+    "Tmin": 17.2,
+    "Tmax": 17.7,
+    "Hmin": 50,
+    "Hmax": 54
+  },
+  {
+    "timestamp": 1758639639.827353,
+    "Tmin": 17.2,
+    "Tmax": 17.4,
+    "Hmin": 48,
+    "Hmax": 50
+  },
+  {
+    "timestamp": 1758643239.827353,
+    "Tmin": 17.1,
+    "Tmax": 17.3,
+    "Hmin": 47,
+    "Hmax": 49
+  },
+  {
+    "timestamp": 1758646839.827353,
+    "Tmin": 16.8,
+    "Tmax": 17.2,
+    "Hmin": 47,
+    "Hmax": 51
+  },
+  {
+    "timestamp": 1758650439.827353,
+    "Tmin": 16.1,
+    "Tmax": 16.9,
+    "Hmin": 49,
+    "Hmax": 54
+  },
+  {
+    "timestamp": 1758654039.827353,
+    "Tmin": 15.6,
+    "Tmax": 16.2,
+    "Hmin": 53,
+    "Hmax": 58
+  },
+  {
+    "timestamp": 1758657639.827353,
+    "Tmin": 15.1,
+    "Tmax": 15.7,
+    "Hmin": 58,
+    "Hmax": 60
+  },
+  {
+    "timestamp": 1758661239.827353,
+    "Tmin": 14.9,
+    "Tmax": 15.1,
+    "Hmin": 58,
+    "Hmax": 60
+  },
+  {
+    "timestamp": 1758664839.827353,
+    "Tmin": 14.5,
+    "Tmax": 15.0,
+    "Hmin": 58,
+    "Hmax": 60
+  },
+  {
+    "timestamp": 1758668439.827353,
+    "Tmin": 13.9,
+    "Tmax": 14.6,
+    "Hmin": 60,
+    "Hmax": 62
+  },
+  {
+    "timestamp": 1758672039.827353,
+    "Tmin": 13.6,
+    "Tmax": 14.1,
+    "Hmin": 61,
+    "Hmax": 63
+  },
+  {
+    "timestamp": 1758675639.827353,
+    "Tmin": 13.2,
+    "Tmax": 13.6,
+    "Hmin": 63,
+    "Hmax": 63
+  },
+  {
+    "timestamp": 1758679239.827353,
+    "Tmin": 12.9,
+    "Tmax": 13.2,
+    "Hmin": 63,
+    "Hmax": 65
+  },
+  {
+    "timestamp": 1758682839.827353,
+    "Tmin": 12.7,
+    "Tmax": 13.0,
+    "Hmin": 65,
+    "Hmax": 65
+  },
+  {
+    "timestamp": 1758686439.827353,
+    "Tmin": 12.0,
+    "Tmax": 12.7,
+    "Hmin": 65,
+    "Hmax": 67
+  },
+  {
+    "timestamp": 1758690039.827353,
+    "Tmin": 11.7,
+    "Tmax": 12.2,
+    "Hmin": 65,
+    "Hmax": 67
+  },
+  {
+    "timestamp": 1758693639.827353,
+    "Tmin": 11.4,
+    "Tmax": 11.8,
+    "Hmin": 66,
+    "Hmax": 67
+  },
+  {
+    "timestamp": 1758697239.827353,
+    "Tmin": 11.6,
+    "Tmax": 11.9,
+    "Hmin": 66,
+    "Hmax": 69
+  },
+  {
+    "timestamp": 1758700839.827353,
+    "Tmin": 11.8,
+    "Tmax": 12.5,
+    "Hmin": 66,
+    "Hmax": 67
+  },
+  {
+    "timestamp": 1758704439.827353,
+    "Tmin": 12.4,
+    "Tmax": 13.3,
+    "Hmin": 62,
+    "Hmax": 66
+  },
+  {
+    "timestamp": 1758708039.827353,
+    "Tmin": 13.3,
+    "Tmax": 14.4,
+    "Hmin": 59,
+    "Hmax": 63
+  },
+  {
+    "timestamp": 1758711639.827353,
+    "Tmin": 14.3,
+    "Tmax": 15.8,
+    "Hmin": 55,
+    "Hmax": 64
+  },
+  {
+    "timestamp": 1758715239.827353,
+    "Tmin": 15.8,
+    "Tmax": 16.4,
+    "Hmin": 51,
+    "Hmax": 57
+  },
+  {
+    "timestamp": 1758718839.827353,
+    "Tmin": 16.3,
+    "Tmax": 16.7,
+    "Hmin": 48,
+    "Hmax": 53
+  },
+  {
+    "timestamp": 1758722439.827353,
+    "Tmin": 16.6,
+    "Tmax": 17.1,
+    "Hmin": 42,
+    "Hmax": 50
+  },
+  {
+    "timestamp": 1758726039.827353,
+    "Tmin": 16.7,
+    "Tmax": 17.1,
+    "Hmin": 40,
+    "Hmax": 45
+  },
+  {
+    "timestamp": 1758729639.827353,
+    "Tmin": 16.5,
+    "Tmax": 16.8,
+    "Hmin": 38,
+    "Hmax": 41
+  },
+  {
+    "timestamp": 1758733239.827353,
+    "Tmin": 15.9,
+    "Tmax": 16.5,
+    "Hmin": 38,
+    "Hmax": 40
+  },
+  {
+    "timestamp": 1758736839.827353,
+    "Tmin": 15.3,
+    "Tmax": 16.0,
+    "Hmin": 38,
+    "Hmax": 40
+  },
+  {
+    "timestamp": 1758740439.827353,
+    "Tmin": 14.5,
+    "Tmax": 15.3,
+    "Hmin": 40,
+    "Hmax": 43
+  },
+  {
+    "timestamp": 1758744039.827353,
+    "Tmin": 13.9,
+    "Tmax": 14.6,
+    "Hmin": 43,
+    "Hmax": 45
+  },
+  {
+    "timestamp": 1758747639.827353,
+    "Tmin": 13.3,
+    "Tmax": 13.9,
+    "Hmin": 45,
+    "Hmax": 47
+  },
+  {
+    "timestamp": 1758751239.827353,
+    "Tmin": 12.8,
+    "Tmax": 13.3,
+    "Hmin": 47,
+    "Hmax": 49
+  },
+  {
+    "timestamp": 1758754802.443396,
+    "Tmin": 12.1,
+    "Tmax": 12.8,
+    "Hmin": 49,
+    "Hmax": 51
+  },
+  {
+    "timestamp": 1758758402.443396,
+    "Tmin": 11.7,
+    "Tmax": 12.2,
+    "Hmin": 51,
+    "Hmax": 54
+  },
+  {
+    "timestamp": 1758762002.443396,
+    "Tmin": 11.1,
+    "Tmax": 11.8,
+    "Hmin": 54,
+    "Hmax": 55
+  },
+  {
+    "timestamp": 1758765602.443396,
+    "Tmin": 10.8,
+    "Tmax": 11.2,
+    "Hmin": 55,
+    "Hmax": 57
+  },
+  {
+    "timestamp": 1758769202.443396,
+    "Tmin": 10.4,
+    "Tmax": 10.8,
+    "Hmin": 56,
+    "Hmax": 57
+  },
+  {
+    "timestamp": 1758772802.443396,
+    "Tmin": 10.0,
+    "Tmax": 10.5,
+    "Hmin": 56,
+    "Hmax": 58
+  },
+  {
+    "timestamp": 1758776402.443396,
+    "Tmin": 9.5,
+    "Tmax": 10.0,
+    "Hmin": 58,
+    "Hmax": 59
+  },
+  {
+    "timestamp": 1758780002.443396,
+    "Tmin": 9.5,
+    "Tmax": 9.7,
+    "Hmin": 58,
+    "Hmax": 59
+  },
+  {
+    "timestamp": 1758783602.443396,
+    "Tmin": 9.5,
+    "Tmax": 10.1,
+    "Hmin": 58,
+    "Hmax": 59
+  },
+  {
+    "timestamp": 1758787202.443396,
+    "Tmin": 10.1,
+    "Tmax": 11.1,
+    "Hmin": 57,
+    "Hmax": 58
+  },
+  {
+    "timestamp": 1758790802.443396,
+    "Tmin": 11.1,
+    "Tmax": 12.1,
+    "Hmin": 54,
+    "Hmax": 57
+  },
+  {
+    "timestamp": 1758794402.443396,
+    "Tmin": 12.1,
+    "Tmax": 13.3,
+    "Hmin": 50,
+    "Hmax": 55
+  },
+  {
+    "timestamp": 1758798002.443396,
+    "Tmin": 13.2,
+    "Tmax": 14.6,
+    "Hmin": 45,
+    "Hmax": 51
+  },
+  {
+    "timestamp": 1758801602.443396,
+    "Tmin": 14.5,
+    "Tmax": 15.0,
+    "Hmin": 44,
+    "Hmax": 47
+  },
+  {
+    "timestamp": 1758805202.443396,
+    "Tmin": 15.0,
+    "Tmax": 15.6,
+    "Hmin": 43,
+    "Hmax": 45
+  },
+  {
+    "timestamp": 1758808802.443396,
+    "Tmin": 15.5,
+    "Tmax": 16.1,
+    "Hmin": 42,
+    "Hmax": 44
+  },
+  {
+    "timestamp": 1758812402.443396,
+    "Tmin": 16.1,
+    "Tmax": 16.3,
+    "Hmin": 40,
+    "Hmax": 44
+  },
+  {
+    "timestamp": 1758816002.443396,
+    "Tmin": 16.1,
+    "Tmax": 16.3,
+    "Hmin": 40,
+    "Hmax": 42
+  },
+  {
+    "timestamp": 1758819602.443396,
+    "Tmin": 15.7,
+    "Tmax": 16.1,
+    "Hmin": 41,
+    "Hmax": 43
+  },
+  {
+    "timestamp": 1758823192.656356,
+    "Tmin": 14.9,
+    "Tmax": 15.7,
+    "Hmin": 43,
+    "Hmax": 45
+  },
+  {
+    "timestamp": 1758826792.656356,
+    "Tmin": 14.3,
+    "Tmax": 14.9,
+    "Hmin": 45,
+    "Hmax": 48
+  },
+  {
+    "timestamp": 1758830392.656356,
+    "Tmin": 13.6,
+    "Tmax": 14.4,
+    "Hmin": 48,
+    "Hmax": 54
+  },
+  {
+    "timestamp": 1758833992.656356,
+    "Tmin": 12.7,
+    "Tmax": 13.6,
+    "Hmin": 52,
+    "Hmax": 55
+  },
+  {
+    "timestamp": 1758837554.273244,
+    "Tmin": 12.0,
+    "Tmax": 12.7,
+    "Hmin": 54,
+    "Hmax": 57
+  },
+  {
+    "timestamp": 1758841154.273244,
+    "Tmin": 11.4,
+    "Tmax": 12.0,
+    "Hmin": 56,
+    "Hmax": 58
+  },
+  {
+    "timestamp": 1758844754.273244,
+    "Tmin": 11.0,
+    "Tmax": 11.5,
+    "Hmin": 58,
+    "Hmax": 60
+  },
+  {
+    "timestamp": 1758848354.273244,
+    "Tmin": 10.7,
+    "Tmax": 11.1,
+    "Hmin": 59,
+    "Hmax": 60
+  },
+  {
+    "timestamp": 1758851954.273244,
+    "Tmin": 10.3,
+    "Tmax": 10.8,
+    "Hmin": 59,
+    "Hmax": 60
+  },
+  {
+    "timestamp": 1758855554.273244,
+    "Tmin": 10.1,
+    "Tmax": 10.3,
+    "Hmin": 59,
+    "Hmax": 60
+  },
+  {
+    "timestamp": 1758859154.273244,
+    "Tmin": 9.6,
+    "Tmax": 10.2,
+    "Hmin": 60,
+    "Hmax": 61
+  },
+  {
+    "timestamp": 1758862754.273244,
+    "Tmin": 9.2,
+    "Tmax": 9.7,
+    "Hmin": 60,
+    "Hmax": 61
+  },
+  {
+    "timestamp": 1758866354.273244,
+    "Tmin": 9.1,
+    "Tmax": 9.3,
+    "Hmin": 61,
+    "Hmax": 61
+  },
+  {
+    "timestamp": 1758869954.273244,
+    "Tmin": 9.1,
+    "Tmax": 9.8,
+    "Hmin": 61,
+    "Hmax": 62
+  },
+  {
+    "timestamp": 1758873554.273244,
+    "Tmin": 9.8,
+    "Tmax": 10.8,
+    "Hmin": 59,
+    "Hmax": 61
+  },
+  {
+    "timestamp": 1758877154.273244,
+    "Tmin": 10.8,
+    "Tmax": 11.9,
+    "Hmin": 57,
+    "Hmax": 60
+  },
+  {
+    "timestamp": 1758880754.273244,
+    "Tmin": 11.8,
+    "Tmax": 13.1,
+    "Hmin": 53,
+    "Hmax": 57
+  },
+  {
+    "timestamp": 1758884354.273244,
+    "Tmin": 13.1,
+    "Tmax": 14.7,
+    "Hmin": 48,
+    "Hmax": 54
+  },
+  {
+    "timestamp": 1758887954.273244,
+    "Tmin": 14.6,
+    "Tmax": 15.1,
+    "Hmin": 44,
+    "Hmax": 49
+  },
+  {
+    "timestamp": 1758891554.273244,
+    "Tmin": 15.1,
+    "Tmax": 15.7,
+    "Hmin": 43,
+    "Hmax": 46
+  },
+  {
+    "timestamp": 1758895154.273244,
+    "Tmin": 15.7,
+    "Tmax": 16.5,
+    "Hmin": 40,
+    "Hmax": 44
+  },
+  {
+    "timestamp": 1758898754.273244,
+    "Tmin": 16.4,
+    "Tmax": 16.6,
+    "Hmin": 39,
+    "Hmax": 42
+  },
+  {
+    "timestamp": 1758902354.273244,
+    "Tmin": 16.3,
+    "Tmax": 16.5,
+    "Hmin": 39,
+    "Hmax": 41
+  },
+  {
+    "timestamp": 1758905949.484373,
+    "Tmin": 16.0,
+    "Tmax": 16.4,
+    "Hmin": 40,
+    "Hmax": 41
+  },
+  {
+    "timestamp": 1758909547.2102,
+    "Tmin": 15.3,
+    "Tmax": 16.0,
+    "Hmin": 40,
+    "Hmax": 44
+  }
+]

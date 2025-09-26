@@ -24,6 +24,8 @@ import argparse
 import logging
 import datetime
 
+import matplotlib.pyplot as plt
+
 from lywsd03mmcaccess import logger
 from lywsd03mmcaccess.io import read_json, write_object
 from lywsd03mmcaccess.thermometeraccess import ThermometerAccess, pretty_measurement, current_timezone
@@ -137,17 +139,98 @@ def process_print_history(args):
         _LOGGER.error("unable to read history from path %s", histfile)
         return
 
-    curr_timezone = current_timezone()
+    recent = args.recent
+    if recent is not None:
+        try:
+            recent = int(recent)
+        except ValueError:
+            _LOGGER.warning("unable to convert '%s' to integer", args.recent)
+            recent = None
+    if recent:
+        recent = min(recent, len(data_list))
+        data_list = data_list[-recent:]
 
+    noprint = args.noprint
+
+    if not noprint:
+        ## print data
+        _LOGGER.info("printing raw data")
+        print_raw(data_list)
+
+    showchart = args.showchart
+    outchart = args.outchart
+
+    if not showchart and not outchart:
+        return
+
+    ## show plot
+    _LOGGER.info("generating plot data")
+
+    xpoints, ytemperature, ytemperature_diff, yhumidity, yhumidity_diff = prepare_plot_data(data_list)
+
+    plt.subplot(4, 1, 1)
+    plt.plot(xpoints, ytemperature)
+    plt.title("Minimum and maximum temperature")
+    # plt.ylabel('Temperature')
+    plt.subplot(4, 1, 2)
+    plt.plot(xpoints, ytemperature_diff)
+    plt.title("Temperature difference")
+    # plt.ylabel('Temperature')
+
+    plt.subplot(4, 1, 3)
+    plt.plot(xpoints, yhumidity)
+    plt.title("Minimum and maximum humidity")
+    # plt.ylabel('Humidity')
+    plt.subplot(4, 1, 4)
+    plt.plot(xpoints, yhumidity_diff)
+    plt.title("Humidity difference")
+    # plt.ylabel('Humidity')
+
+    plt.tight_layout()
+
+    if outchart:
+        _LOGGER.info("storing plot to file '%s'", outchart)
+        plt.savefig(outchart)
+
+    if showchart:
+        _LOGGER.info("opening plot window")
+        plt.show()
+
+
+def print_raw(data_list):
+    curr_timezone = current_timezone()
     for index, item in enumerate(data_list):
         curr_timestamp = item["timestamp"]
         curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
-        curr_time_str = curr_time
-        # curr_time_str = curr_time.strftime("%Y-%m-%d %H:%M:%S")
         print(
-            f"""Entry {index}: {curr_time_str} Tmin: {item["Tmin"]} Tmax: {item["Tmax"]}""",
+            f"""Entry {index}: {curr_time} Tmin: {item["Tmin"]} Tmax: {item["Tmax"]}""",
             f""" Hmin: {item["Hmin"]} Hmax: {item["Hmax"]}""",
         )
+
+
+def prepare_plot_data(data_list):
+    xpoints = []
+    ytemperature = []
+    ytemperature_diff = []
+    yhumidity = []
+    yhumidity_diff = []
+
+    curr_timezone = current_timezone()
+    for item in data_list:
+        curr_timestamp = item["timestamp"]
+        curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
+
+        xpoints.append(curr_time)
+        temp_min = item["Tmin"]
+        temp_max = item["Tmax"]
+        ytemperature.append((temp_min, temp_max))
+        ytemperature_diff.append(temp_max - temp_min)
+        hum_min = item["Hmin"]
+        hum_max = item["Hmax"]
+        yhumidity.append((hum_min, hum_max))
+        yhumidity_diff.append(hum_max - hum_min)
+
+    return (xpoints, ytemperature, ytemperature_diff, yhumidity, yhumidity_diff)
 
 
 # =======================================================================
@@ -224,6 +307,15 @@ def main():
         action="store",
         required=True,
         help="Path to JSON file with history data",
+    )
+    subparser.add_argument("--recent", action="store", required=False, help="Number of recent entries")
+    subparser.add_argument("--noprint", action="store_true", required=False, help="Do not print raw data")
+    subparser.add_argument("--showchart", action="store_true", required=False, help="Show history chart")
+    subparser.add_argument(
+        "--outchart",
+        action="store",
+        required=False,
+        help="Print history in form of chart",
     )
 
     ## =================================================
