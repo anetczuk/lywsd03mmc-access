@@ -22,7 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def get_app_datadir():
-    data_dir = user_data_dir("tree-page-generator")
+    data_dir = user_data_dir("lywsd03mmc-access")
     os.makedirs(data_dir, exist_ok=True)
     return data_dir
 
@@ -120,16 +120,6 @@ def normalize_string(content: str) -> str:
     # return string_encode.decode()
 
     # return content
-
-
-def read_data(file_path):
-    with open(file_path, encoding="utf8") as fp:
-        return fp.read()
-
-
-def write_data(file_path, content):
-    with open(file_path, "w", encoding="utf8") as fp:
-        fp.write(content)
 
 
 def calculate_dict_hash(data_dict):

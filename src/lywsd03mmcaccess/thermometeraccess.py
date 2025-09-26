@@ -25,10 +25,16 @@ class ThermometerAccess:
 
     def __init__(self, mac, access_timeout=25.0):
         self.client = Lywsd03mmcClient(mac=mac, notification_timeout=access_timeout)
+        ## get local timezone and set proper timezone offset
+        self.tzinfo = current_timezone()
+        offset = self.tzinfo.utcoffset(None)
+        hours_offset = offset.total_seconds() / 3600
+        self.client.tz_offset = hours_offset
 
     @contextlib.contextmanager
     def connect(self):
         with self.client.connect() as item:
+            _LOGGER.debug("connected")
             yield item
 
     ## { "temperature": float,
@@ -38,17 +44,36 @@ class ThermometerAccess:
     def get_current_measurements(self) -> dict:
         return self.client.data
 
-    def get_history_measurements(self, recent_entries=None):
+    def get_history_measurements(self, recent_entries=None, recent_timestamp=None):
+        if recent_timestamp is not None:
+            recent_time = datetime.datetime.fromtimestamp(recent_timestamp, tz=datetime.timezone.utc)
+            curr_time = datetime.datetime.now(tz=datetime.timezone.utc)
+            time_difference = curr_time - recent_time
+            diff_hours = time_difference.total_seconds() / 3600
+            missing_entries = int(diff_hours) + 2  ## +2 for margin
+            recent_entries = missing_entries
+
+        hist_data = None
         if recent_entries is None:
-            return self.client.history_data
-        hist_index_data = self.get_last_and_next_history_index()
-        hist_index = hist_index_data[0]
-        start_index = hist_index - recent_entries
-        if start_index < 1:
-            return self.client.history_data
-        self.set_first_history_index(start_index)
-        _LOGGER.debug("getting recent %s entries", recent_entries)
-        return self.client.history_data
+            hist_data = self.client.history_data
+        else:
+            _LOGGER.debug("getting recent %s entries", recent_entries)
+            hist_index_data = self.get_last_and_next_history_index()
+            hist_index = hist_index_data[0]
+            start_index = hist_index - recent_entries
+            if start_index > 0:
+                self.set_first_history_index(start_index)
+            _LOGGER.debug("requesting history data")
+            hist_data = self.client.history_data
+            _LOGGER.debug("received recent %s entries", len(hist_data))
+
+        ## add timezone
+        for item in hist_data.values():
+            item_datetime = item[0]
+            now_aware = item_datetime.replace(tzinfo=self.tzinfo)
+            item[0] = now_aware
+
+        return hist_data
 
     def get_last_history_entry(self):
         res = self.read_characteristic("ebe0ccbb-7a0a-4b0c-8a1a-6ff2997da3a6")
@@ -109,6 +134,10 @@ class ThermometerAccess:
     def listen_measurements(self):
         listener = ThermometerListener(self.client)
         listener.listen()
+
+
+def current_timezone():
+    return datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
 
 
 class ThermometerListener:

@@ -22,10 +22,11 @@ with contextlib.suppress(ImportError):
 import sys
 import argparse
 import logging
-
-from lywsd03mmcaccess.thermometeraccess import ThermometerAccess, pretty_measurement
+import datetime
 
 from lywsd03mmcaccess import logger
+from lywsd03mmcaccess.io import read_json, write_object
+from lywsd03mmcaccess.thermometeraccess import ThermometerAccess, pretty_measurement, current_timezone
 
 
 if __name__ == "__main__":
@@ -35,6 +36,22 @@ else:
 
 
 # =======================================================================
+
+
+def process_info(args):
+    mac = args.mac
+    device = ThermometerAccess(mac)
+    with device.connect():
+        dev_time = device.client.time
+        print("time:", dev_time, dev_time[0].timestamp())
+        print("start time:", device.client.start_time)
+        print("tz offset:", device.client.tz_offset)
+        print("measurement:", device.get_current_measurements())
+        print("units:", device.client.units)
+        print("comfort levels:", device.get_comfort_levels())
+        print("recent history entry:", device.get_last_history_entry())
+        print("history indexes:", device.get_last_and_next_history_index())
+        print("history first index:", device.get_first_history_index())
 
 
 def process_read_data(args):
@@ -56,13 +73,81 @@ def process_read_history(args):
         except ValueError:
             _LOGGER.warning("unable to convert '%s' to integer", args.recent)
             recent = None
-    device = ThermometerAccess(mac)
 
+    outfile = args.outappend
+
+    device = ThermometerAccess(mac)
+    if outfile is None:
+        ## print history to screen
+        with device.connect():
+            data = device.get_history_measurements(recent_entries=recent)
+            for key, item in data.items():
+                # item[0] = item[0].strftime("%Y-%m-%d %H:%M:%S")
+                print(f"Entry {key}: {item[0]} Tmin: {item[1]} Tmax: {item[3]} Hmin: {item[2]} Hmax: {item[4]}")
+        return
+
+    ## write history to file
     with device.connect():
-        data = device.get_history_measurements(recent_entries=recent)
-        for key, item in data.items():
-            item[0] = item[0].strftime("%Y-%m-%d %H:%M:%S")
-            print(f"Entry {key}: {item[0]} Tmin: {item[1]} Tmax: {item[3]} Hmin: {item[2]} Hmax: {item[4]}")
+        data_list = read_json(outfile)
+        json_recent_timestamp = None
+        json_recent_datetime = None
+        if data_list is None:
+            data_list = []
+        else:
+            recent_entry = data_list[-1]
+            json_recent_timestamp = recent_entry["timestamp"]
+            json_recent_datetime = datetime.datetime.fromtimestamp(json_recent_timestamp, tz=device.tzinfo)
+
+        history_data = device.get_history_measurements(recent_timestamp=json_recent_timestamp)
+        new_items = []
+        for hist_item in history_data.values():
+            hist_item_datetime = hist_item[0]
+            item_timestamp = hist_item_datetime.timestamp()
+            if json_recent_timestamp is not None:
+                timestamp_diff_minutes = (item_timestamp - json_recent_timestamp) / 60
+                if timestamp_diff_minutes <= 5.0:
+                    ## skipping entry
+                    _LOGGER.debug(
+                        "skipping entry: %s[s] ts: %s recent json entry: %s",
+                        timestamp_diff_minutes * 60,
+                        hist_item_datetime,
+                        json_recent_datetime,
+                    )
+                    continue
+            entry = {
+                "timestamp": item_timestamp,
+                "Tmin": hist_item[1],
+                "Tmax": hist_item[3],
+                "Hmin": hist_item[2],
+                "Hmax": hist_item[4],
+            }
+            new_items.append(entry)
+        if not new_items:
+            _LOGGER.info("no new history entries to append")
+            return
+        _LOGGER.info("writing history new %s items to file: %s", len(new_items), outfile)
+        data_list.extend(new_items)
+        write_object(data_list, outfile, indent=2)
+
+
+def process_print_history(args):
+    histfile = args.histfile
+    data_list = read_json(histfile)
+    if data_list is None:
+        _LOGGER.error("unable to read history from path %s", histfile)
+        return
+
+    curr_timezone = current_timezone()
+
+    for index, item in enumerate(data_list):
+        curr_timestamp = item["timestamp"]
+        curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
+        curr_time_str = curr_time
+        # curr_time_str = curr_time.strftime("%Y-%m-%d %H:%M:%S")
+        print(
+            f"""Entry {index}: {curr_time_str} Tmin: {item["Tmin"]} Tmax: {item["Tmax"]}""",
+            f""" Hmin: {item["Hmin"]} Hmax: {item["Hmax"]}""",
+        )
 
 
 # =======================================================================
@@ -80,6 +165,18 @@ def main():
     parser.set_defaults(func=None)
 
     subparsers = parser.add_subparsers(help="commands", description="commands", dest="command", required=False)
+
+    ## =================================================
+
+    description = "read device basic data"
+    subparser = subparsers.add_parser(
+        "info",
+        help=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    subparser.description = description
+    subparser.set_defaults(func=process_info)
+    subparser.add_argument("--mac", action="store", required=True, help="MAC address of device")
 
     ## =================================================
 
@@ -105,7 +202,29 @@ def main():
     subparser.set_defaults(func=process_read_history)
     subparser.add_argument("--mac", action="store", required=True, help="MAC address of device")
     subparser.add_argument("--recent", action="store", required=False, help="Number of recent entries")
-    # subparser.add_argument("--outdir", action="store", required=True, help="Path to output directory")
+    subparser.add_argument(
+        "--outappend",
+        action="store",
+        required=False,
+        help="Path to output JSON file to append history data",
+    )
+
+    ## =================================================
+
+    description = "print history file"
+    subparser = subparsers.add_parser(
+        "printhistory",
+        help=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    subparser.description = description
+    subparser.set_defaults(func=process_print_history)
+    subparser.add_argument(
+        "--histfile",
+        action="store",
+        required=True,
+        help="Path to JSON file with history data",
+    )
 
     ## =================================================
 
