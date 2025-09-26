@@ -50,9 +50,9 @@ received data: 2025-09-19 19:09:08.739266 Temp: 23.01C Humidity: 63% Battery: 84
 Full log is accessible [here](examples/data_subscribe.txt).
 
 There are 195 samples in time span of 19 minutes and 35 seconds. Time step between each sample is 6 seconds (unable 
-to change). Battery drop is ~5%, so:
-- battery consumption is ~15.3% / h,
-- battery consumption is 0.026% per sample.
+to change). Battery drop is ~5%pt, so:
+- battery consumption is ~**15.3%pt per hour**,
+- battery consumption is **0.026%pt per sample**.
 
 #### Polling
 
@@ -70,13 +70,24 @@ Following listing presents measurements log in polling mode:
 Full log is accessible [here](examples/data_poll.txt).
 
 There are 42 samples in time span of 13 hours, 47 minutes and 16 seconds. Time step between each sample is 20 minutes 
-(can be any duration). Battery drop is ~6%, so:
-- battery consumption is ~0.44% / h,
-- battery consumption is 0.14% per sample.
+(can be any duration). Battery drop is ~6%pt, so:
+- battery consumption is ~**0.44%pt per hour**,
+- battery consumption is **0.14%pt per sample**.
 
 It becomes clear that active polling consumes more energy than receiving notification. On other hand normally there is 
 no need to measure temperature every 6 seconds. Active polling to be less efficient than notifications has to be 
 performed with period shorter than **30 seconds**.
+
+
+## Humidity accuracy
+
+In some places in the web it is mentioned that humidity sensor can be somehow inaccurate. For some devices it can be 
+about 5 percentage points higher than real value.
+
+Further information can be found here:
+- https://www.rotronic.com/media/productattachments/files/c/a/capacitive_humidity_sensor_final.pdf
+- https://www.reddit.com/r/Xiaomi/comments/yv565e/comment/jd4s3qd/
+- https://github.com/Zenedith/LYWSD03MMC?tab=readme-ov-file#calibration
 
 
 ## Running the application
@@ -170,6 +181,16 @@ options:
 
 <!-- insertend -->
 
+#### Collecting history
+
+Measurements history can be collected to JSON file using following command:
+
+```python3 -m lywsd03mmcaccess readhistory --mac <address> --outappend <path-to-JSON-file>```
+
+Command will read history file, check recent measurement, get new measurements from device and add them to the file.
+This feature is handy when executed eg. from cron scheduler. Command, depending on needs, could be executed once a 
+day or twice a week.
+
 
 ## Installation
 
@@ -197,6 +218,7 @@ In case of pull requests please run `process-all.sh` before the request.
 
 ## References
 
+- https://github.com/uduncanu/lywsd03mmc
 - Python `struct` format string: https://docs.python.org/3/library/struct.html#format-strings
 
 
