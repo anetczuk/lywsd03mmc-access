@@ -12,7 +12,7 @@ Some features of the project:
 - plotting history data.
 
 Example of history chart:
-![History chart](examples/example_history.png "Temperature and humidity chart")
+![History chart](examples/example_history.png "Temperature and humidity history")
 
 
 ## Device
@@ -31,11 +31,11 @@ Min and max values are designated in the range on one hour, so history of two fu
 Unfortunately it is impossible to change given range of one hour.
 
 
-## Battery consumption
+#### Battery consumption
 
 Manufacturer claims that it works up to one year on battery. It becomes clear that it does not involve BT connections.
 
-#### Subscription
+###### Subscription
 
 Following listing presents measurements log in *subscription* mode:
 
@@ -54,7 +54,7 @@ to change). Battery drop is ~5%pt, so:
 - battery consumption is ~**15.3%pt per hour**,
 - battery consumption is **0.026%pt per sample**.
 
-#### Polling
+###### Polling
 
 Following listing presents measurements log in polling mode:
 
@@ -79,7 +79,7 @@ no need to measure temperature every 6 seconds. Active polling to be less effici
 performed with period shorter than **30 seconds**.
 
 
-## Humidity accuracy
+#### Humidity accuracy
 
 In some places in the web it is mentioned that humidity sensor can be somehow inaccurate. For some devices it can be 
 about 5 percentage points higher than real value.
@@ -90,14 +90,30 @@ Further information can be found here:
 - https://github.com/Zenedith/LYWSD03MMC?tab=readme-ov-file#calibration
 
 
+#### Sensor inertia
+
+For inertia estimation following experiment was taken: sensor was placed inside a fridge (~7C) for long time (~24h) to 
+achieve stability. Then it was taken out to warm room (~24C) and observed until sensor reached stable state.
+
+Temperature and humidity measurements for period reaching stability in warm room is shown in following chart:
+
+![History chart](examples/unfreeze_measurements.png "Temperature and humidity measurements")
+
+Full log is accessible [here](examples/unfreeze_measurements.txt).
+
+Sensor was taken out from fridge just after second measurement. Stability is reached roughly after **30 minutes**. 
+Humidity chart shows initial rise probably because of vapor condensation on the sensor (*dew point* at 
+temperature ~24C and humidity ~60% is ~16C).
+
+
 ## Running the application
 
 Application accepts following arguments:
 
 <!-- insertstart include="doc/cmdargs.txt" pre="\n" post="\n" -->
 ```
-usage: python3 -m lywsd03mmcaccess.main [-h] [-la] [--listtools]
-                                        {info,readdata,readhistory,printhistory}
+usage: python3 -m lywsd03mmcaccess.main [-h] [-la] [-nl] [--listtools]
+                                        {info,readdata,readhistory,printhistory,convertmeasurements}
                                         ...
 
 access Xiaomi Mi Temperature and Humidity Monitor 2 (LYWSD03MMC) device
@@ -105,17 +121,20 @@ access Xiaomi Mi Temperature and Humidity Monitor 2 (LYWSD03MMC) device
 options:
   -h, --help            show this help message and exit
   -la, --logall         Log all messages (default: False)
+  -nl, --nolog          No diagnostics log messages (default: False)
   --listtools           List tools (default: False)
 
 subcommands:
   commands
 
-  {info,readdata,readhistory,printhistory}
+  {info,readdata,readhistory,printhistory,convertmeasurements}
                         commands
     info                read device basic data
     readdata            read current measurement
     readhistory         read history
-    printhistory        print history file
+    printhistory        print data file (history or measurements)
+    convertmeasurements
+                        convert measurements list to JSON
 ```
 
 
@@ -163,20 +182,35 @@ options:
 
 
 ```
-usage: python3 -m lywsd03mmcaccess.main printhistory [-h] --histfile HISTFILE
+usage: python3 -m lywsd03mmcaccess.main printhistory [-h] --infile INFILE
                                                      [--recent RECENT]
                                                      [--noprint] [--showchart]
                                                      [--outchart OUTCHART]
 
-print history file
+print data file (history or measurements)
 
 options:
   -h, --help           show this help message and exit
-  --histfile HISTFILE  Path to JSON file with history data (default: None)
+  --infile INFILE      Path to JSON file with data (default: None)
   --recent RECENT      Number of recent entries (default: None)
   --noprint            Do not print raw data (default: False)
-  --showchart          Show history chart (default: False)
-  --outchart OUTCHART  Print history in form of chart (default: None)
+  --showchart          Show data chart (default: False)
+  --outchart OUTCHART  Print data in form of chart (default: None)
+```
+
+
+
+```
+usage: python3 -m lywsd03mmcaccess.main convertmeasurements
+       [-h] --infile INFILE [--outfile OUTFILE] [--noprint]
+
+convert measurements list to JSON
+
+options:
+  -h, --help         show this help message and exit
+  --infile INFILE    Path to measurements file (default: None)
+  --outfile OUTFILE  Path to output JSON (default: None)
+  --noprint          Do not print raw data (default: False)
 ```
 
 <!-- insertend -->

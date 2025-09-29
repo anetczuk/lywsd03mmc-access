@@ -23,11 +23,12 @@ import sys
 import argparse
 import logging
 import datetime
+import pprint
 
 import matplotlib.pyplot as plt
 
 from lywsd03mmcaccess import logger
-from lywsd03mmcaccess.io import read_json, write_object
+from lywsd03mmcaccess.io import read_json, write_object, read_list
 from lywsd03mmcaccess.thermometeraccess import ThermometerAccess, pretty_measurement, current_timezone
 
 
@@ -124,6 +125,9 @@ def process_read_history(args):
                 "Hmax": hist_item[4],
             }
             new_items.append(entry)
+            entry = dict(entry)
+            entry["timestamp"] = datetime.datetime.fromtimestamp(entry["timestamp"], tz=device.tzinfo)
+            _LOGGER.info("adding history entry: %s", entry)
         if not new_items:
             _LOGGER.info("no new history entries to append")
             return
@@ -132,20 +136,16 @@ def process_read_history(args):
         write_object(data_list, outfile, indent=2)
 
 
-def process_print_history(args):
-    histfile = args.histfile
-    data_list = read_json(histfile)
+def process_print_data(args):
+    infile = args.infile
+    data_list = read_json(infile)
     if data_list is None:
-        _LOGGER.error("unable to read history from path %s", histfile)
+        _LOGGER.error("unable to read data from path %s", infile)
+        return
+    if not data_list:
         return
 
-    recent = args.recent
-    if recent is not None:
-        try:
-            recent = int(recent)
-        except ValueError:
-            _LOGGER.warning("unable to convert '%s' to integer", args.recent)
-            recent = None
+    recent = parse_int(args.recent)
     if recent:
         recent = min(recent, len(data_list))
         data_list = data_list[-recent:]
@@ -166,27 +166,10 @@ def process_print_history(args):
     ## show plot
     _LOGGER.info("generating plot data")
 
-    xpoints, ytemperature, ytemperature_diff, yhumidity, yhumidity_diff = prepare_plot_data(data_list)
-
-    plt.subplot(4, 1, 1)
-    plt.plot(xpoints, ytemperature)
-    plt.title("Minimum and maximum temperature")
-    # plt.ylabel('Temperature')
-    plt.subplot(4, 1, 2)
-    plt.plot(xpoints, ytemperature_diff)
-    plt.title("Temperature difference")
-    # plt.ylabel('Temperature')
-
-    plt.subplot(4, 1, 3)
-    plt.plot(xpoints, yhumidity)
-    plt.title("Minimum and maximum humidity")
-    # plt.ylabel('Humidity')
-    plt.subplot(4, 1, 4)
-    plt.plot(xpoints, yhumidity_diff)
-    plt.title("Humidity difference")
-    # plt.ylabel('Humidity')
-
-    plt.tight_layout()
+    if "Tmin" in data_list[0]:
+        plot_history(data_list)
+    else:
+        plot_measurements(data_list)
 
     if outchart:
         _LOGGER.info("storing plot to file '%s'", outchart)
@@ -197,18 +180,7 @@ def process_print_history(args):
         plt.show()
 
 
-def print_raw(data_list):
-    curr_timezone = current_timezone()
-    for index, item in enumerate(data_list):
-        curr_timestamp = item["timestamp"]
-        curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
-        print(
-            f"""Entry {index}: {curr_time} Tmin: {item["Tmin"]} Tmax: {item["Tmax"]}""",
-            f""" Hmin: {item["Hmin"]} Hmax: {item["Hmax"]}""",
-        )
-
-
-def prepare_plot_data(data_list):
+def plot_history(data_list):
     xpoints = []
     ytemperature = []
     ytemperature_diff = []
@@ -230,19 +202,162 @@ def prepare_plot_data(data_list):
         yhumidity.append((hum_min, hum_max))
         yhumidity_diff.append(hum_max - hum_min)
 
-    return (xpoints, ytemperature, ytemperature_diff, yhumidity, yhumidity_diff)
+    axes = plt.subplot(4, 1, 1)
+    plt.plot(xpoints, ytemperature)  # type: ignore[arg-type]
+    plt.title("Minimum and maximum temperature")
+    # plt.ylabel('Temperature')
+    axes.minorticks_on()
+    axes.grid()
+
+    axes = plt.subplot(4, 1, 2)
+    plt.plot(xpoints, ytemperature_diff)  # type: ignore[arg-type]
+    plt.title("Temperature difference")
+    # plt.ylabel('Temperature')
+    axes.minorticks_on()
+    axes.grid()
+
+    axes = plt.subplot(4, 1, 3)
+    plt.plot(xpoints, yhumidity)  # type: ignore[arg-type]
+    plt.title("Minimum and maximum humidity")
+    # plt.ylabel('Humidity')
+    axes.minorticks_on()
+    axes.grid()
+
+    axes = plt.subplot(4, 1, 4)
+    plt.plot(xpoints, yhumidity_diff)  # type: ignore[arg-type]
+    plt.title("Humidity difference")
+    # plt.ylabel('Humidity')
+    axes.minorticks_on()
+    axes.grid()
+
+    plt.tight_layout()
+
+
+def plot_measurements(data_list):
+    xpoints = []
+    ytemperature = []
+    yhumidity = []
+    ybattery = []
+
+    curr_timezone = current_timezone()
+    start_time = None
+    for item in data_list:
+        curr_timestamp = item["timestamp"]
+        curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
+
+        if start_time is None:
+            start_time = curr_time
+        time_diff = curr_time - start_time
+        delta = time_diff.total_seconds()
+
+        xpoints.append(delta)
+        temp = item["T"]
+        ytemperature.append(temp)
+        hum = item["H"]
+        yhumidity.append(hum)
+        batt = item["B"]
+        ybattery.append(batt)
+
+    def format_deltatime(value, _pos=None):
+        delta = datetime.timedelta(seconds=value)
+        return f"{delta}"
+
+    axes = plt.subplot(3, 1, 1)
+    plt.plot(xpoints, ytemperature, marker=".")
+    plt.title("Temperature")
+    axes.xaxis.set_major_formatter(format_deltatime)
+    axes.minorticks_on()
+    axes.grid()
+
+    axes = plt.subplot(3, 1, 2)
+    plt.plot(xpoints, yhumidity, marker=".")
+    plt.title("Humidity")
+    axes.xaxis.set_major_formatter(format_deltatime)
+    axes.minorticks_on()
+    axes.grid()
+
+    axes = plt.subplot(3, 1, 3)
+    plt.plot(xpoints, ybattery, marker=".")
+    plt.title("Battery")
+    axes.xaxis.set_major_formatter(format_deltatime)
+    axes.minorticks_on()
+    axes.grid()
+
+    plt.tight_layout()
+
+
+def print_raw(data_list):
+    curr_timezone = current_timezone()
+    for index, item in enumerate(data_list):
+        curr_timestamp = item["timestamp"]
+        if "Tmin" in item:
+            curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
+            print(
+                f"""Entry {index}: {curr_time} Tmin: {item["Tmin"]} Tmax: {item["Tmax"]}""",
+                f""" Hmin: {item["Hmin"]} Hmax: {item["Hmax"]}""",
+            )
+        else:
+            curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
+            print(
+                f"""Entry {index}: {curr_time} T: {item["T"]} H: {item["H"]} B: {item["B"]}""",
+            )
+
+
+def process_convert_measurements(args):
+    input_file = args.infile
+    output_file = args.outfile
+    no_print = args.noprint
+
+    data_list = read_list(input_file)
+
+    out_list = []
+    for item in data_list:
+        item_elements = item.split(" ")
+
+        date_content = item_elements[0]
+        date_content = date_content[1:-1]
+        temp_content = item_elements[3]
+        hum_content = item_elements[5]
+        batt_content = item_elements[7]
+
+        date_data = convert_to_datetime(date_content)
+        temp_data = float(temp_content[:-1])
+        hum_data = int(hum_content[:-1])
+        batt_data = int(batt_content[:-1])
+
+        data_dict = {"timestamp": date_data.timestamp(), "T": temp_data, "H": hum_data, "B": batt_data}
+        out_list.append(data_dict)
+
+    if not no_print:
+        # ruff: noqa: T203
+        pprint.pprint(out_list)
+
+    if output_file:
+        _LOGGER.info("writing to file: %s", output_file)
+        write_object(out_list, output_file, indent=2)
+
+
+def convert_to_datetime(date_string):
+    ## format codes: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+
+    ## example: [23:03:52.888767] measurement: Temperature: 23.25C Humidity: 61% Battery: 77%
+    ret_date = datetime.datetime.strptime(date_string, "%H:%M:%S.%f")
+    time_obj = ret_date.time()
+    date_obj = datetime.date.today()
+    return datetime.datetime.combine(date_obj, time_obj)
 
 
 # =======================================================================
 
 
-def main():
+def prepare_parser():
     parser = argparse.ArgumentParser(
         prog="python3 -m lywsd03mmcaccess.main",
         description="access Xiaomi Mi Temperature and Humidity Monitor 2 (LYWSD03MMC) device",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("-la", "--logall", action="store_true", help="Log all messages")
+    parser.add_argument("-nl", "--nolog", action="store_true", help="No diagnostics log messages")
     # have to be implemented as parameter instead of command (because access to 'subparsers' object)
     parser.add_argument("--listtools", action="store_true", help="List tools")
     parser.set_defaults(func=None)
@@ -294,31 +409,69 @@ def main():
 
     ## =================================================
 
-    description = "print history file"
+    description = "print data file (history or measurements)"
     subparser = subparsers.add_parser(
         "printhistory",
         help=description,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     subparser.description = description
-    subparser.set_defaults(func=process_print_history)
+    subparser.set_defaults(func=process_print_data)
     subparser.add_argument(
-        "--histfile",
+        "--infile",
         action="store",
         required=True,
-        help="Path to JSON file with history data",
+        help="Path to JSON file with data",
     )
     subparser.add_argument("--recent", action="store", required=False, help="Number of recent entries")
     subparser.add_argument("--noprint", action="store_true", required=False, help="Do not print raw data")
-    subparser.add_argument("--showchart", action="store_true", required=False, help="Show history chart")
+    subparser.add_argument("--showchart", action="store_true", required=False, help="Show data chart")
     subparser.add_argument(
         "--outchart",
         action="store",
         required=False,
-        help="Print history in form of chart",
+        help="Print data in form of chart",
     )
 
     ## =================================================
+
+    description = "convert measurements list to JSON"
+    subparser = subparsers.add_parser(
+        "convertmeasurements",
+        help=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    subparser.description = description
+    subparser.set_defaults(func=process_convert_measurements)
+    subparser.add_argument(
+        "--infile",
+        action="store",
+        required=True,
+        help="Path to measurements file",
+    )
+    subparser.add_argument(
+        "--outfile",
+        action="store",
+        required=False,
+        help="Path to output JSON",
+    )
+    subparser.add_argument("--noprint", action="store_true", required=False, help="Do not print raw data")
+
+    return parser, subparsers
+
+
+def parse_int(input_value):
+    if input_value is None:
+        return None
+    try:
+        return int(input_value)
+    except ValueError:
+        _LOGGER.warning("unable to convert '%s' to integer", input_value)
+    return None
+
+
+def main():
+    parser, subparsers = prepare_parser()
 
     args = parser.parse_args()
 
@@ -328,7 +481,9 @@ def main():
         print(", ".join(tools_list))
         return 0
 
-    if args.logall is True:
+    if args.nolog is True:
+        logger.configure(log_level=logging.CRITICAL)
+    elif args.logall is True:
         logger.configure(log_level=logging.DEBUG)
     else:
         logger.configure(log_level=logging.INFO)

@@ -1,6 +1,6 @@
 ```
-usage: python3 -m lywsd03mmcaccess.main [-h] [-la] [--listtools]
-                                        {info,readdata,readhistory,printhistory}
+usage: python3 -m lywsd03mmcaccess.main [-h] [-la] [-nl] [--listtools]
+                                        {info,readdata,readhistory,printhistory,convertmeasurements}
                                         ...
 
 access Xiaomi Mi Temperature and Humidity Monitor 2 (LYWSD03MMC) device
@@ -8,17 +8,20 @@ access Xiaomi Mi Temperature and Humidity Monitor 2 (LYWSD03MMC) device
 options:
   -h, --help            show this help message and exit
   -la, --logall         Log all messages (default: False)
+  -nl, --nolog          No diagnostics log messages (default: False)
   --listtools           List tools (default: False)
 
 subcommands:
   commands
 
-  {info,readdata,readhistory,printhistory}
+  {info,readdata,readhistory,printhistory,convertmeasurements}
                         commands
     info                read device basic data
     readdata            read current measurement
     readhistory         read history
-    printhistory        print history file
+    printhistory        print data file (history or measurements)
+    convertmeasurements
+                        convert measurements list to JSON
 ```
 
 
@@ -66,18 +69,33 @@ options:
 
 
 ```
-usage: python3 -m lywsd03mmcaccess.main printhistory [-h] --histfile HISTFILE
+usage: python3 -m lywsd03mmcaccess.main printhistory [-h] --infile INFILE
                                                      [--recent RECENT]
                                                      [--noprint] [--showchart]
                                                      [--outchart OUTCHART]
 
-print history file
+print data file (history or measurements)
 
 options:
   -h, --help           show this help message and exit
-  --histfile HISTFILE  Path to JSON file with history data (default: None)
+  --infile INFILE      Path to JSON file with data (default: None)
   --recent RECENT      Number of recent entries (default: None)
   --noprint            Do not print raw data (default: False)
-  --showchart          Show history chart (default: False)
-  --outchart OUTCHART  Print history in form of chart (default: None)
+  --showchart          Show data chart (default: False)
+  --outchart OUTCHART  Print data in form of chart (default: None)
+```
+
+
+
+```
+usage: python3 -m lywsd03mmcaccess.main convertmeasurements
+       [-h] --infile INFILE [--outfile OUTFILE] [--noprint]
+
+convert measurements list to JSON
+
+options:
+  -h, --help         show this help message and exit
+  --infile INFILE    Path to measurements file (default: None)
+  --outfile OUTFILE  Path to output JSON (default: None)
+  --noprint          Do not print raw data (default: False)
 ```

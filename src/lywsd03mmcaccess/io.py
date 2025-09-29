@@ -59,6 +59,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         raise TypeError(message)
 
 
+## pass 'indent' to have output prettified
 def write_object(dict_obj, out_file, indent=None):
     content = json.dumps(dict_obj, indent=indent, cls=CustomJSONEncoder)
     write_file(out_file, content)
