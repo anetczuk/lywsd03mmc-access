@@ -122,11 +122,15 @@ On humidity chart there is sudden value drop and then curve takes sinusoidal sha
 
 Sensor stability is presented on following charts:
 
+- measurement stability in warm environment
+
 ![Stability in warm environment](examples/room_stability.png "Stability in warm environment")
+
+- measurement stability in cold environment
 
 ![Stability in cold environment](examples/fridge_stability.png "Stability in cold environment")
 
-Charts data can be found [here (warm)](examples/room_stability.json) and 
+Charts data can be found [here (warm)](examples/outdoor_stability.json) and   
 [here (cold)](examples/cold_stability.json).
 
 First chart presents measurement history of senor placed in warm room (~24.5C). Second chart presents temperature and
@@ -134,7 +138,15 @@ humidity history in fridge (~7C). Measurement period for first case is 10 hours 
 case of warm room min and max temperature difference is around **0.5C**, and humidity around **2%pt**. Inside fridge 
 temperature difference is **2.5C** and humidity difference equals to **14%pt**.
 
-It is clear that sensor oscillations are smaller in warm temperatures than in cold temperatures.
+Charts presents that sensor oscillations are smaller in warm temperatures than in cold temperatures.
+
+Those results can be compared to chart presenting sensor measurements in outdoor environment:
+
+![Stability in cold environment](examples/outdoor_stability.png "Stability in outdoor")
+
+Chart data is stored [here (outdoor)](examples/outdoor_stability.json).
+
+Despite temperature changes between day and night, temperature variance is smaller than measurements in fridge.
 
 
 ## Running the application

@@ -54,4 +54,10 @@ MEASURE_CHART_PATH="${SCRIPT_DIR}"/room_stability.png
 "${SRC_DIR}"/lywsd03mmcaccess/main.py printhistory --infile "${JSON_DATA_FILE}" --outchart "${MEASURE_CHART_PATH}" --noprint
 
 
+echo "generate outdoor stability chart"
+JSON_DATA_FILE="${SCRIPT_DIR}/outdoor_stability.json"
+MEASURE_CHART_PATH="${SCRIPT_DIR}"/outdoor_stability.png
+"${SRC_DIR}"/lywsd03mmcaccess/main.py printhistory --infile "${JSON_DATA_FILE}" --outchart "${MEASURE_CHART_PATH}" --noprint
+
+
 echo -e "\nall generated"

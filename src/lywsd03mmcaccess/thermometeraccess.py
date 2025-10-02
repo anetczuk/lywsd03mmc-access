@@ -27,15 +27,28 @@ class ThermometerAccess:
         self.client = Lywsd03mmcClient(mac=mac, notification_timeout=access_timeout)
         ## get local timezone and set proper timezone offset
         self.tzinfo = current_timezone()
+        # self.client._tz_offset = 0       ## set device time related data timezone unaware
         offset = self.tzinfo.utcoffset(None)
         hours_offset = offset.total_seconds() / 3600
-        self.client.tz_offset = hours_offset
+        self.client._tz_offset = hours_offset
 
     @contextlib.contextmanager
     def connect(self):
         with self.client.connect() as item:
             _LOGGER.debug("connected")
             yield item
+
+    @property
+    def start_time(self):
+        utc_start_time = self.client.start_time - datetime.timedelta(hours=self.client.tz_offset)
+        ## 'replace' does not convert datetime (does not change internal timestamp)
+        utc_start_time = utc_start_time.replace(tzinfo=datetime.timezone.utc)
+        return utc_start_time.astimezone(tz=self.tzinfo)
+    
+    def get_device_current_time(self):
+        dev_uptime = self.client.time[0] - datetime.datetime(1970, 1, 1)
+        curr_time = self.start_time + dev_uptime
+        return curr_time.replace(tzinfo=self.tzinfo) 
 
     ## { "temperature": float,
     ##   "humidity": int,
@@ -67,25 +80,39 @@ class ThermometerAccess:
             hist_data = self.client.history_data
             _LOGGER.debug("received recent %s entries", len(hist_data))
 
-        ## add timezone
-        for item in hist_data.values():
-            item_datetime = item[0]
-            now_aware = item_datetime.replace(tzinfo=self.tzinfo)
-            item[0] = now_aware
+        ret_list = []
+        for index, item in hist_data.items():
+            item_timedelta = item[0] - self.client.start_time
+            item_timestamp = item_timedelta.total_seconds()
+            item_timestamp = int(item_timestamp) 
+            hist_item_datetime = self.start_time + datetime.timedelta(seconds=item_timestamp)
+            entry = {
+                "index": index,
+                "timestamp": item_timestamp,
+                "datetime": str(hist_item_datetime),
+                "Tmin": item[1],
+                "Tmax": item[3],
+                "Hmin": item[2],
+                "Hmax": item[4],
+            }
+            ret_list.append(entry)
 
-        return hist_data
+        return ret_list
 
-    def get_last_history_entry(self):
+    def get_recent_history_entry(self):
         res = self.read_characteristic("ebe0ccbb-7a0a-4b0c-8a1a-6ff2997da3a6")
         data = struct.unpack_from("<IIhBhB", res)
-        ts = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=data[1])
+        ts = data[1]
+        item_datetime = self.start_time + datetime.timedelta(seconds=ts)
+        item_datetime = item_datetime.replace(tzinfo=self.tzinfo)
         return {
-            "idx_num": data[0],
+            "index": data[0],
             "timestamp": ts,
-            "temperature_row_max": data[2] / 10.0,
-            "humidity_max": data[3],
-            "temperature_row_min": data[4] / 10.0,
-            "humidity_min": data[5],
+            "datetime": str(item_datetime),
+            "Tmin": data[4] / 10.0,
+            "Tmax": data[2] / 10.0,
+            "Hmin": data[3],
+            "Hmax": data[5],
         }
 
     ## returns (<recent-index>, <next-index>)

@@ -24,6 +24,7 @@ import argparse
 import logging
 import datetime
 import pprint
+import bluepy
 
 import matplotlib.pyplot as plt
 
@@ -45,16 +46,33 @@ def process_info(args):
     mac = args.mac
     device = ThermometerAccess(mac)
     with device.connect():
-        dev_time = device.client.time
-        print("time:", dev_time, dev_time[0].timestamp())
-        print("start time:", device.client.start_time)
-        print("tz offset:", device.client.tz_offset)
-        print("measurement:", device.get_current_measurements())
-        print("units:", device.client.units)
-        print("comfort levels:", device.get_comfort_levels())
-        print("recent history entry:", device.get_last_history_entry())
-        print("history indexes:", device.get_last_and_next_history_index())
-        print("history first index:", device.get_first_history_index())
+        dev_time_data = device.client.time
+        dev_time = dev_time_data[0]
+        dev_tz_offset = dev_time_data[1]
+        print("device time:           ", dev_time)
+        print("device timestamp:      ", int(dev_time.timestamp()))
+        print("device tz offset:      ", dev_tz_offset)
+        print("client tz offset:      ", device.client.tz_offset)
+        print("device start time:     ", device.start_time)   ## last bootup
+        print("device current time:   ", device.get_device_current_time())   ## last bootup
+        print("measurement:           ", device.get_current_measurements())
+        print("units:                 ", device.client.units)
+        print("comfort levels:        ", device.get_comfort_levels())
+        
+        recent_hist_entry = device.get_recent_history_entry()
+        recent_hist_delta = datetime.timedelta(seconds=recent_hist_entry["timestamp"]) 
+        recent_device_hist_date = datetime.datetime(1970, 1, 1) + recent_hist_delta
+        recent_wall_hist_date = device.start_time + recent_hist_delta
+        print("recent history entry:  ", recent_hist_entry) 
+        print("entry device time:     ", recent_device_hist_date)
+        print("entry time:            ", recent_wall_hist_date)
+
+        history = device.get_history_measurements(recent_entries=3)
+        print("recent history entries:")
+        pprint.pprint(history, indent=2)
+
+        print("history indexes:       ", device.get_last_and_next_history_index())
+        print("history first index:   ", device.get_first_history_index())
 
 
 def process_read_data(args):
@@ -84,9 +102,9 @@ def process_read_history(args):
         ## print history to screen
         with device.connect():
             data = device.get_history_measurements(recent_entries=recent)
-            for key, item in data.items():
-                # item[0] = item[0].strftime("%Y-%m-%d %H:%M:%S")
-                print(f"Entry {key}: {item[0]} Tmin: {item[1]} Tmax: {item[3]} Hmin: {item[2]} Hmax: {item[4]}")
+            for item in data:
+                index = item["index"]
+                print(f"Entry {index}: {item}")
         return
 
     ## write history to file
@@ -103,9 +121,10 @@ def process_read_history(args):
 
         history_data = device.get_history_measurements(recent_timestamp=json_recent_timestamp)
         new_items = []
-        for hist_item in history_data.values():
-            hist_item_datetime = hist_item[0]
-            item_timestamp = hist_item_datetime.timestamp()
+        for hist_item in history_data:
+            item_timestamp = hist_item["timestamp"]
+            item_datetime = hist_item["datetime"]
+            hist_item_datetime = datetime.datetime.fromisoformat(item_datetime)
             if json_recent_timestamp is not None:
                 timestamp_diff_minutes = (item_timestamp - json_recent_timestamp) / 60
                 if timestamp_diff_minutes <= 5.0:
@@ -117,16 +136,8 @@ def process_read_history(args):
                         json_recent_datetime,
                     )
                     continue
-            entry = {
-                "timestamp": item_timestamp,
-                "Tmin": hist_item[1],
-                "Tmax": hist_item[3],
-                "Hmin": hist_item[2],
-                "Hmax": hist_item[4],
-            }
-            new_items.append(entry)
-            entry = dict(entry)
-            entry["timestamp"] = datetime.datetime.fromtimestamp(entry["timestamp"], tz=device.tzinfo)
+            new_items.append(hist_item)
+            entry = dict(hist_item)
             _LOGGER.info("adding history entry: %s", entry)
         if not new_items:
             _LOGGER.info("no new history entries to append")
@@ -187,10 +198,9 @@ def plot_history(data_list):
     yhumidity = []
     yhumidity_diff = []
 
-    curr_timezone = current_timezone()
     for item in data_list:
-        curr_timestamp = item["timestamp"]
-        curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
+        curr_datetime = item["datetime"]
+        curr_time = datetime.datetime.fromisoformat(curr_datetime)
 
         xpoints.append(curr_time)
         temp_min = item["Tmin"]
@@ -289,14 +299,16 @@ def plot_measurements(data_list):
 def print_raw(data_list):
     curr_timezone = current_timezone()
     for index, item in enumerate(data_list):
-        curr_timestamp = item["timestamp"]
         if "Tmin" in item:
-            curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
+            curr_timestamp = item["timestamp"]
+            curr_datetime = item["datetime"]
+            curr_time = datetime.datetime.fromisoformat(curr_datetime)
             print(
-                f"""Entry {index}: {curr_time} Tmin: {item["Tmin"]} Tmax: {item["Tmax"]}""",
+                f"""Entry {index}: {curr_timestamp} {curr_time} Tmin: {item["Tmin"]} Tmax: {item["Tmax"]}""",
                 f""" Hmin: {item["Hmin"]} Hmax: {item["Hmax"]}""",
             )
         else:
+            curr_timestamp = item["timestamp"]
             curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
             print(
                 f"""Entry {index}: {curr_time} T: {item["T"]} H: {item["H"]} B: {item["B"]}""",
@@ -310,6 +322,8 @@ def process_convert_measurements(args):
 
     data_list = read_list(input_file)
 
+    hour_offset = 0
+    recent_date_data = None
     out_list = []
     for item in data_list:
         item_elements = item.split(" ")
@@ -320,7 +334,13 @@ def process_convert_measurements(args):
         hum_content = item_elements[5]
         batt_content = item_elements[7]
 
-        date_data = convert_to_datetime(date_content)
+        converted_date = convert_to_datetime(date_content)
+        date_data = converted_date + datetime.timedelta(hours=hour_offset)
+        if recent_date_data is not None and recent_date_data > date_data:
+            hour_offset += 24
+            date_data = converted_date + datetime.timedelta(hours=hour_offset)
+        recent_date_data = date_data
+
         temp_data = float(temp_content[:-1])
         hum_data = int(hum_content[:-1])
         batt_data = int(batt_content[:-1])
@@ -493,7 +513,11 @@ def main():
         parser.print_help()
         return 1
 
-    return args.func(args)
+    try:
+        return args.func(args)
+    except bluepy.btle.BTLEDisconnectError as exc:
+        _LOGGER.error("unable to connect, reason: %s", exc)
+        return 1
 
 
 if __name__ == "__main__":
