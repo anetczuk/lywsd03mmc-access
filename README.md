@@ -28,7 +28,8 @@ Every history entry consists of:
 - maximum and minimum humidity.
 
 Min and max values are designated in the range on one hour, so history of two full days consists of 48 entries. 
-Unfortunately it is impossible to change given range of one hour.
+Unfortunately it is impossible to change given range of one hour. Device is capable to store at least **300** history 
+entries.
 
 
 #### Battery consumption
@@ -78,7 +79,6 @@ It becomes clear that active polling consumes more energy than receiving notific
 no need to measure temperature every 6 seconds. Active polling to be less efficient than notifications has to be 
 performed with period shorter than **30 seconds**.
 
-
 #### Humidity accuracy
 
 In some places in the web it is mentioned that humidity sensor can be somehow inaccurate. For some devices it can be 
@@ -89,21 +89,52 @@ Further information can be found here:
 - https://www.reddit.com/r/Xiaomi/comments/yv565e/comment/jd4s3qd/
 - https://github.com/Zenedith/LYWSD03MMC?tab=readme-ov-file#calibration
 
-
-#### Sensor inertia
+#### Sensor inertia - warming
 
 For inertia estimation following experiment was taken: sensor was placed inside a fridge (~7C) for long time (~24h) to 
 achieve stability. Then it was taken out to warm room (~24C) and observed until sensor reached stable state.
 
 Temperature and humidity measurements for period reaching stability in warm room is shown in following chart:
 
-![History chart](examples/unfreeze_measurements.png "Temperature and humidity measurements")
+![History chart](examples/fridge_out_measurements.png "Temperature and humidity measurements")
 
-Full log is accessible [here](examples/unfreeze_measurements.txt).
+Full log is accessible [here](examples/fridge_out_measurements.txt).
 
 Sensor was taken out from fridge just after second measurement. Stability is reached roughly after **30 minutes**. 
 Humidity chart shows initial rise probably because of vapor condensation on the sensor (*dew point* at 
 temperature ~24C and humidity ~60% is ~16C).
+
+#### Sensor inertia - cooling
+
+Similar experiment was taken for inertia estimation in case of cooling: sensor was taken from warm room (~24C) to fridge 
+(~6C) and observed until sensor reaches stability.
+
+Temperature and humidity measurements in fridge is shown in following chart:
+
+![History chart](examples/fridge_in_measurements.png "Temperature and humidity measurements")
+
+Full log is accessible [here](examples/fridge_in_measurements.txt).
+
+Sensor was put into fridge just after second measurement. Target temperature is reached rougly after **60 minutes**.
+On humidity chart there is sudden value drop and then curve takes sinusoidal shape.
+
+#### Sensor stability
+
+Sensor stability is presented on following charts:
+
+![Stability in warm environment](examples/room_stability.png "Stability in warm environment")
+
+![Stability in cold environment](examples/fridge_stability.png "Stability in cold environment")
+
+Charts data can be found [here (warm)](examples/room_stability.json) and 
+[here (cold)](examples/cold_stability.json).
+
+First chart presents measurement history of senor placed in warm room (~24.5C). Second chart presents temperature and
+humidity history in fridge (~7C). Measurement period for first case is 10 hours and for second case is 7 hours. In 
+case of warm room min and max temperature difference is around **0.5C**, and humidity around **2%pt**. Inside fridge 
+temperature difference is **2.5C** and humidity difference equals to **14%pt**.
+
+It is clear that sensor oscillations are smaller in warm temperatures than in cold temperatures.
 
 
 ## Running the application
