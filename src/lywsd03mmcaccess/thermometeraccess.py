@@ -44,11 +44,11 @@ class ThermometerAccess:
         ## 'replace' does not convert datetime (does not change internal timestamp)
         utc_start_time = utc_start_time.replace(tzinfo=datetime.timezone.utc)
         return utc_start_time.astimezone(tz=self.tzinfo)
-    
+
     def get_device_current_time(self):
-        dev_uptime = self.client.time[0] - datetime.datetime(1970, 1, 1)
+        dev_uptime = self.client.time[0] - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
         curr_time = self.start_time + dev_uptime
-        return curr_time.replace(tzinfo=self.tzinfo) 
+        return curr_time.replace(tzinfo=self.tzinfo)
 
     ## { "temperature": float,
     ##   "humidity": int,
@@ -84,7 +84,7 @@ class ThermometerAccess:
         for index, item in hist_data.items():
             item_timedelta = item[0] - self.client.start_time
             item_timestamp = item_timedelta.total_seconds()
-            item_timestamp = int(item_timestamp) 
+            item_timestamp = int(item_timestamp)
             hist_item_datetime = self.start_time + datetime.timedelta(seconds=item_timestamp)
             entry = {
                 "index": index,

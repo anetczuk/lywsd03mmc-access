@@ -53,17 +53,17 @@ def process_info(args):
         print("device timestamp:      ", int(dev_time.timestamp()))
         print("device tz offset:      ", dev_tz_offset)
         print("client tz offset:      ", device.client.tz_offset)
-        print("device start time:     ", device.start_time)   ## last bootup
-        print("device current time:   ", device.get_device_current_time())   ## last bootup
+        print("device start time:     ", device.start_time)  ## last bootup
+        print("device current time:   ", device.get_device_current_time())  ## last bootup
         print("measurement:           ", device.get_current_measurements())
         print("units:                 ", device.client.units)
         print("comfort levels:        ", device.get_comfort_levels())
-        
+
         recent_hist_entry = device.get_recent_history_entry()
-        recent_hist_delta = datetime.timedelta(seconds=recent_hist_entry["timestamp"]) 
-        recent_device_hist_date = datetime.datetime(1970, 1, 1) + recent_hist_delta
+        recent_hist_delta = datetime.timedelta(seconds=recent_hist_entry["timestamp"])
+        recent_device_hist_date = datetime.datetime(1970, 1, 1, tzinfo=device.tzinfo) + recent_hist_delta
         recent_wall_hist_date = device.start_time + recent_hist_delta
-        print("recent history entry:  ", recent_hist_entry) 
+        print("recent history entry:  ", recent_hist_entry)
         print("entry device time:     ", recent_device_hist_date)
         print("entry time:            ", recent_wall_hist_date)
 
@@ -198,6 +198,8 @@ def plot_history(data_list):
     yhumidity = []
     yhumidity_diff = []
 
+    prev_temp_avg = -999
+    prev_hum_avg = -999
     for item in data_list:
         curr_datetime = item["datetime"]
         curr_time = datetime.datetime.fromisoformat(curr_datetime)
@@ -206,11 +208,22 @@ def plot_history(data_list):
         temp_min = item["Tmin"]
         temp_max = item["Tmax"]
         ytemperature.append((temp_min, temp_max))
-        ytemperature_diff.append(temp_max - temp_min)
+        curr_temp_avg = (temp_max + temp_min) / 2.0
+        temp_diff = temp_max - temp_min
+        if curr_temp_avg < prev_temp_avg:
+            temp_diff *= -1
+        ytemperature_diff.append(temp_diff)
+        prev_temp_avg = curr_temp_avg
+
         hum_min = item["Hmin"]
         hum_max = item["Hmax"]
         yhumidity.append((hum_min, hum_max))
-        yhumidity_diff.append(hum_max - hum_min)
+        curr_hum_avg = (hum_max + hum_min) / 2.0
+        hum_diff = hum_max - hum_min
+        if curr_hum_avg < prev_hum_avg:
+            hum_diff *= -1
+        yhumidity_diff.append(hum_diff)
+        prev_hum_avg = curr_hum_avg
 
     axes = plt.subplot(4, 1, 1)
     plt.plot(xpoints, ytemperature)  # type: ignore[arg-type]
