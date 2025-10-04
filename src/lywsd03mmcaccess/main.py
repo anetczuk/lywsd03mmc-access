@@ -60,7 +60,7 @@ def process_info(args):
         print("comfort levels:        ", device.get_comfort_levels())
 
         recent_hist_entry = device.get_recent_history_entry()
-        recent_hist_delta = datetime.timedelta(seconds=recent_hist_entry["timestamp"])
+        recent_hist_delta = datetime.timedelta(seconds=recent_hist_entry["dev_timestamp"])
         recent_device_hist_date = datetime.datetime(1970, 1, 1, tzinfo=device.tzinfo) + recent_hist_delta
         recent_wall_hist_date = device.start_time + recent_hist_delta
         print("recent history entry:  ", recent_hist_entry)
@@ -116,16 +116,17 @@ def process_read_history(args):
             data_list = []
         else:
             recent_entry = data_list[-1]
-            json_recent_timestamp = recent_entry["timestamp"]
-            json_recent_datetime = datetime.datetime.fromtimestamp(json_recent_timestamp, tz=device.tzinfo)
+            recent_datetime = recent_entry["wall_datetime"]
+            hist_item_datetime = datetime.datetime.fromisoformat(recent_datetime)
+            json_recent_timestamp = hist_item_datetime.timestamp()
 
         history_data = device.get_history_measurements(recent_timestamp=json_recent_timestamp)
         new_items = []
         for hist_item in history_data:
-            item_timestamp = hist_item["timestamp"]
-            item_datetime = hist_item["datetime"]
-            hist_item_datetime = datetime.datetime.fromisoformat(item_datetime)
             if json_recent_timestamp is not None:
+                item_datetime = hist_item["wall_datetime"]
+                hist_item_datetime = datetime.datetime.fromisoformat(item_datetime)
+                item_timestamp = hist_item_datetime.timestamp()
                 timestamp_diff_minutes = (item_timestamp - json_recent_timestamp) / 60
                 if timestamp_diff_minutes <= 5.0:
                     ## skipping entry
@@ -201,7 +202,7 @@ def plot_history(data_list):
     prev_temp_avg = -999
     prev_hum_avg = -999
     for item in data_list:
-        curr_datetime = item["datetime"]
+        curr_datetime = item["wall_datetime"]
         curr_time = datetime.datetime.fromisoformat(curr_datetime)
 
         xpoints.append(curr_time)
@@ -313,14 +314,16 @@ def print_raw(data_list):
     curr_timezone = current_timezone()
     for index, item in enumerate(data_list):
         if "Tmin" in item:
-            curr_timestamp = item["timestamp"]
-            curr_datetime = item["datetime"]
+            ## history data
+            curr_timestamp = item["dev_timestamp"]
+            curr_datetime = item["wall_datetime"]
             curr_time = datetime.datetime.fromisoformat(curr_datetime)
             print(
                 f"""Entry {index}: {curr_timestamp} {curr_time} Tmin: {item["Tmin"]} Tmax: {item["Tmax"]}""",
                 f""" Hmin: {item["Hmin"]} Hmax: {item["Hmax"]}""",
             )
         else:
+            ## measurement data
             curr_timestamp = item["timestamp"]
             curr_time = datetime.datetime.fromtimestamp(curr_timestamp, tz=curr_timezone)
             print(

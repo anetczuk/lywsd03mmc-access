@@ -130,8 +130,8 @@ Sensor stability is presented on following charts:
 
 ![Stability in cold environment](examples/fridge_stability.png "Stability in cold environment")
 
-Charts data can be found [here (warm)](examples/outdoor_stability.json) and   
-[here (cold)](examples/cold_stability.json).
+Charts data can be found [here (warm)](examples/room_stability.json) and   
+[here (cold)](examples/fridge_stability.json).
 
 First chart presents measurement history of senor placed in warm room (~24.5C). Second chart presents temperature and
 humidity history in fridge (~7C). Measurement period for first case is 10 hours and for second case is 7 hours. In 

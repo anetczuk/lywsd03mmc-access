@@ -38,6 +38,7 @@ class ThermometerAccess:
             _LOGGER.debug("connected")
             yield item
 
+    ## start time of device in local timezone
     @property
     def start_time(self):
         utc_start_time = self.client.start_time - datetime.timedelta(hours=self.client.tz_offset)
@@ -46,7 +47,9 @@ class ThermometerAccess:
         return utc_start_time.astimezone(tz=self.tzinfo)
 
     def get_device_current_time(self):
-        dev_uptime = self.client.time[0] - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        dev_time = self.client.time[0]
+        dev_time = dev_time.replace(tzinfo=self.tzinfo)
+        dev_uptime = dev_time - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
         curr_time = self.start_time + dev_uptime
         return curr_time.replace(tzinfo=self.tzinfo)
 
@@ -59,8 +62,8 @@ class ThermometerAccess:
 
     def get_history_measurements(self, recent_entries=None, recent_timestamp=None):
         if recent_timestamp is not None:
-            recent_time = datetime.datetime.fromtimestamp(recent_timestamp, tz=datetime.timezone.utc)
-            curr_time = datetime.datetime.now(tz=datetime.timezone.utc)
+            recent_time = datetime.datetime.fromtimestamp(recent_timestamp, tz=self.tzinfo)
+            curr_time = datetime.datetime.now(tz=self.tzinfo)
             time_difference = curr_time - recent_time
             diff_hours = time_difference.total_seconds() / 3600
             missing_entries = int(diff_hours) + 2  ## +2 for margin
@@ -88,8 +91,8 @@ class ThermometerAccess:
             hist_item_datetime = self.start_time + datetime.timedelta(seconds=item_timestamp)
             entry = {
                 "index": index,
-                "timestamp": item_timestamp,
-                "datetime": str(hist_item_datetime),
+                "dev_timestamp": item_timestamp,
+                "wall_datetime": str(hist_item_datetime),
                 "Tmin": item[1],
                 "Tmax": item[3],
                 "Hmin": item[2],
@@ -107,8 +110,8 @@ class ThermometerAccess:
         item_datetime = item_datetime.replace(tzinfo=self.tzinfo)
         return {
             "index": data[0],
-            "timestamp": ts,
-            "datetime": str(item_datetime),
+            "dev_timestamp": ts,
+            "wall_datetime": str(item_datetime),
             "Tmin": data[4] / 10.0,
             "Tmax": data[2] / 10.0,
             "Hmin": data[3],
