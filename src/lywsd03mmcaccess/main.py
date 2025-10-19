@@ -110,15 +110,15 @@ def process_read_history(args):
     ## write history to file
     with device.connect():
         data_list = read_json(outfile)
-        json_recent_timestamp = None
         json_recent_datetime = None
+        json_recent_timestamp = None
         if data_list is None:
             data_list = []
         else:
             recent_entry = data_list[-1]
             recent_datetime = recent_entry["wall_datetime"]
-            hist_item_datetime = datetime.datetime.fromisoformat(recent_datetime)
-            json_recent_timestamp = hist_item_datetime.timestamp()
+            json_recent_datetime = datetime.datetime.fromisoformat(recent_datetime)
+            json_recent_timestamp = json_recent_datetime.timestamp()
 
         history_data = device.get_history_measurements(recent_timestamp=json_recent_timestamp)
         new_items = []
@@ -126,8 +126,8 @@ def process_read_history(args):
             if json_recent_timestamp is not None:
                 item_datetime = hist_item["wall_datetime"]
                 hist_item_datetime = datetime.datetime.fromisoformat(item_datetime)
-                item_timestamp = hist_item_datetime.timestamp()
-                timestamp_diff_minutes = (item_timestamp - json_recent_timestamp) / 60
+                hist_item_timestamp = hist_item_datetime.timestamp()
+                timestamp_diff_minutes = (hist_item_timestamp - json_recent_timestamp) / 60
                 if timestamp_diff_minutes <= 5.0:
                     ## skipping entry
                     _LOGGER.debug(

@@ -27,7 +27,7 @@ src_examples=$(find "$src_dir" -type f -name "*.py" -not -path "$src_dir/build/*
 
 echo
 echo "running mypy"
-echo "ignore line warning using: # type: ignore"
+echo "ignore line warning using: # type: ignore[code]"
 
 MYPY_ERR_PATH="/tmp/mypy.err.txt"
 FAILED=0

@@ -64,7 +64,7 @@ ignore_errors=E115,E126,E201,E202,E203,E221,E241,E262,E265,E266,E402,E501,W391,D
 
 echo
 echo "running pycodestyle"
-echo "to ignore warning inline add comment at the end of line: # noqa"
+echo "to ignore warning inline add comment at the end of line: # noqa: <warning-code>"
 pycodestyle --show-source --statistics --count --ignore="$ignore_errors" "${check_dirs[@]}"
 exit_code=$?
 
@@ -104,6 +104,8 @@ tools_files=$(find "$SCRIPT_DIR" -type f -name "*.py")
 check_files="${check_files} ${tools_files}"
 
 
+## for unknown reason pylint works better from root directory
+pushd "${SCRIPT_DIR}/.." > /dev/null
 echo
 echo "running pylint3"
 echo "to ignore warning for module put following line on top of file: # pylint: disable=<check_id>"
@@ -115,6 +117,7 @@ if [ $exit_code -ne 0 ]; then
     exit $exit_code
 fi
 echo "pylint3 -- no warnings found"
+popd > /dev/null
 
 
 echo
