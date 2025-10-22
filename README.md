@@ -12,7 +12,7 @@ Some features of the project:
 - plotting history data.
 
 Example of history chart:
-![History chart](examples/example_history.png "Temperature and humidity history")
+![History chart](examples/data/example_history.png "Temperature and humidity history")
 
 
 ## Device
@@ -48,7 +48,7 @@ received data: 2025-09-19 18:49:45.945374 Temp: 22.94C Humidity: 63% Battery: 89
 received data: 2025-09-19 19:09:02.709446 Temp: 22.98C Humidity: 63% Battery: 84%
 received data: 2025-09-19 19:09:08.739266 Temp: 23.01C Humidity: 63% Battery: 84%
 ``` 
-Full log is accessible [here](examples/data_subscribe.txt).
+Full log is accessible [here](examples/data/data_subscribe.txt).
 
 There are 195 samples in time span of 19 minutes and 35 seconds. Time step between each sample is 6 seconds (unable 
 to change). Battery drop is ~5%pt, so:
@@ -68,7 +68,7 @@ Following listing presents measurements log in polling mode:
 [2025-09-19 14:59:13.925522] Temp: 22.91C Humidity: 62% Battery: 91%
 
 ``` 
-Full log is accessible [here](examples/data_poll.txt).
+Full log is accessible [here](examples/data/data_poll.txt).
 
 There are 42 samples in time span of 13 hours, 47 minutes and 16 seconds. Time step between each sample is 20 minutes 
 (can be any duration). Battery drop is ~6%pt, so:
@@ -96,9 +96,9 @@ achieve stability. Then it was taken out to warm room (~24C) and observed until 
 
 Temperature and humidity measurements for period reaching stability in warm room is shown in following chart:
 
-![History chart](examples/fridge_out_measurements.png "Temperature and humidity measurements")
+![History chart](examples/data/fridge_out_measurements.png "Temperature and humidity measurements")
 
-Full log is accessible [here](examples/fridge_out_measurements.txt).
+Full log is accessible [here](examples/data/fridge_out_measurements.txt).
 
 Sensor was taken out from fridge just after second measurement. Stability is reached roughly after **30 minutes**. 
 Humidity chart shows initial rise probably because of vapor condensation on the sensor (*dew point* at 
@@ -111,9 +111,9 @@ Similar experiment was taken for inertia estimation in case of cooling: sensor w
 
 Temperature and humidity measurements in fridge is shown in following chart:
 
-![History chart](examples/fridge_in_measurements.png "Temperature and humidity measurements")
+![History chart](examples/data/fridge_in_measurements.png "Temperature and humidity measurements")
 
-Full log is accessible [here](examples/fridge_in_measurements.txt).
+Full log is accessible [here](examples/data/fridge_in_measurements.txt).
 
 Sensor was put into fridge just after second measurement. Target temperature is reached rougly after **60 minutes**.
 On humidity chart there is sudden value drop and then curve takes sinusoidal shape.
@@ -124,14 +124,14 @@ Sensor stability is presented on following charts:
 
 - measurement stability in warm environment
 
-![Stability in warm environment](examples/room_stability.png "Stability in warm environment")
+![Stability in warm environment](examples/data/room_stability.png "Stability in warm environment")
 
 - measurement stability in cold environment
 
-![Stability in cold environment](examples/fridge_stability.png "Stability in cold environment")
+![Stability in cold environment](examples/data/fridge_stability.png "Stability in cold environment")
 
-Charts data can be found [here (warm)](examples/room_stability.json) and   
-[here (cold)](examples/fridge_stability.json).
+Charts data can be found [here (warm)](examples/data/room_stability.json) and   
+[here (cold)](examples/data/fridge_stability.json).
 
 First chart presents measurement history of senor placed in warm room (~24.5C). Second chart presents temperature and
 humidity history in fridge (~7C). Measurement period for first case is 10 hours and for second case is 7 hours. In 
@@ -142,9 +142,9 @@ Charts presents that sensor oscillations are smaller in warm temperatures than i
 
 Those results can be compared to chart presenting sensor measurements in outdoor environment:
 
-![Stability in cold environment](examples/outdoor_stability.png "Stability in outdoor")
+![Stability in cold environment](examples/data/outdoor_stability.png "Stability in outdoor")
 
-Chart data is stored [here (outdoor)](examples/outdoor_stability.json).
+Chart data is stored [here (outdoor)](examples/data/outdoor_stability.json).
 
 Despite temperature changes between day and night, temperature variance is smaller than measurements in fridge.
 
