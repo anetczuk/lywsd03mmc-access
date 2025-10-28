@@ -49,8 +49,10 @@ def process_info(args):
         dev_time_data = device.client.time
         dev_time = dev_time_data[0]
         dev_tz_offset = dev_time_data[1]
-        print("device time:           ", dev_time)
-        print("device timestamp:      ", int(dev_time.timestamp()))
+        print("device time:           ", dev_time.astimezone(tz=datetime.timezone.utc))
+        dev_time_timestamp = int(dev_time.timestamp())
+        print("device timestamp:      ", dev_time_timestamp)
+        print("device up time:        ", datetime.timedelta(seconds=dev_time_timestamp))
         print("device tz offset:      ", dev_tz_offset)
         print("client tz offset:      ", device.client.tz_offset)
         print("device start time:     ", device.start_time)  ## last bootup
@@ -58,6 +60,10 @@ def process_info(args):
         print("measurement:           ", device.get_current_measurements())
         print("units:                 ", device.client.units)
         print("comfort levels:        ", device.get_comfort_levels())
+
+        history_recent_index, history_count = device.get_history_indexes()
+        print("history indexes:       ", history_recent_index, history_count)
+        print("history first index:   ", device.get_first_history_index())
 
         recent_hist_entry = device.get_recent_history_entry()
         recent_hist_delta = datetime.timedelta(seconds=recent_hist_entry["dev_timestamp"])
@@ -70,9 +76,12 @@ def process_info(args):
         history = device.get_history_measurements(recent_entries=3)
         print("recent history entries:")
         pprint.pprint(history, indent=2)
-
-        print("history indexes:       ", device.get_last_and_next_history_index())
-        print("history first index:   ", device.get_first_history_index())
+        # if history_count > -10:
+        #     history = device.get_history_measurements(recent_entries=3)
+        #     print("recent history entries:")
+        #     pprint.pprint(history, indent=2)
+        # else:
+        #     print("no history entries")
 
 
 def process_read_data(args):

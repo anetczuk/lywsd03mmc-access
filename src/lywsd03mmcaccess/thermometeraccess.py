@@ -74,7 +74,11 @@ class ThermometerAccess:
             hist_data = self.client.history_data
         else:
             _LOGGER.debug("getting recent %s entries", recent_entries)
-            hist_index_data = self.get_last_and_next_history_index()
+            hist_index_data = self.get_history_indexes()
+            hist_count = hist_index_data[1]
+            if hist_count < 1:
+                ## no data - return
+                return []
             hist_index = hist_index_data[0]
             start_index = hist_index - recent_entries
             if start_index > 0:
@@ -118,8 +122,10 @@ class ThermometerAccess:
             "Hmax": data[5],
         }
 
-    ## returns (<recent-index>, <next-index>)
-    def get_last_and_next_history_index(self):
+    ## returns (<recent-history-index>, <number-of-history-entries>)
+    ## "number-of-history-entries" can be smaller from "recent-history-index" due to
+    ## history clear command
+    def get_history_indexes(self):
         res = self.read_characteristic("ebe0ccb9-7a0a-4b0c-8a1a-6ff2997da3a6")
         return struct.unpack_from("II", res)
 
@@ -133,6 +139,12 @@ class ThermometerAccess:
         data = struct.unpack_from("I", res)
         return data[0]
 
+    ## clear data
+    ## it clears history data, does not affect device time
+    def clear_data(self):
+        data = struct.pack("I", 0x01)
+        self.write_characteristic("ebe0ccd1-7a0a-4b0c-8a1a-6ff2997da3a6", data)
+
     ## works only for next history read (after the next read consecutive history reads will return full history)
     def set_first_history_index(self, history_index: int):
         data = struct.pack("I", history_index)
@@ -143,7 +155,10 @@ class ThermometerAccess:
         data = struct.unpack("<HBH", res)
         return {"temp1": data[0] / 100.0, "hum": data[1], "temp2": data[2] / 100.0}
 
-    def get_custom_last_and_next_history_index(self):
+    ## returns (<recent-history-index>, <number-of-history-entries>)
+    ## "number-of-history-entries" can be smaller from "recent-history-index" due to
+    ## history clear command
+    def get_custom_history_indexes(self):
         res = self.read_characteristic("8edffff1-3d1b-9c37-4623-ad7265f14076")
         return struct.unpack("II", res)
 

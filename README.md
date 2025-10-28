@@ -148,6 +148,12 @@ Chart data is stored [here (outdoor)](examples/data/outdoor_stability.json).
 
 Despite temperature changes between day and night, temperature variance is smaller than measurements in fridge.
 
+#### Resetting sensor state
+
+It is possible to reset device settings (including device time) and measurement history. To reset the settings one have 
+to connect for several seconds (~8s) *GND* and *RESET* pins placed next to battery slot. 
+Resetting measurements can be done by writing *0x01* to *GNAT* service *ebe0ccd1-7a0a-4b0c-8a1a-6ff2997da3a6*.
+
 
 ## Running the application
 
