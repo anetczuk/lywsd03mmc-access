@@ -26,7 +26,8 @@ HIST_CHART_PATH="${SCRIPT_DIR}"/example_history.png
 echo "generate fridge in chart"
 RAW_DATA_FILE="${SCRIPT_DIR}/fridge_in_measurements.txt"
 JSON_DATA_FILE="${SCRIPT_DIR}/fridge_in_measurements.json"
-python3 "${SRC_DIR}"/lywsd03mmcaccess/main.py -la convertmeasurements --infile "${RAW_DATA_FILE}" --outfile "${JSON_DATA_FILE}" --noprint
+python3 "${SRC_DIR}"/lywsd03mmcaccess/main.py -la convertmeasurements --infile "${RAW_DATA_FILE}" --outfile "${JSON_DATA_FILE}" \
+                                              --noprint --basedate 2025-10-28
 
 MEASURE_CHART_PATH="${SCRIPT_DIR}"/fridge_in_measurements.png
 "${SRC_DIR}"/lywsd03mmcaccess/main.py printhistory --infile "${JSON_DATA_FILE}" --outchart "${MEASURE_CHART_PATH}" --noprint
@@ -35,7 +36,8 @@ MEASURE_CHART_PATH="${SCRIPT_DIR}"/fridge_in_measurements.png
 echo "generate fridge out chart"
 RAW_DATA_FILE="${SCRIPT_DIR}/fridge_out_measurements.txt"
 JSON_DATA_FILE="${SCRIPT_DIR}/fridge_out_measurements.json"
-python3 "${SRC_DIR}"/lywsd03mmcaccess/main.py -la convertmeasurements --infile "${RAW_DATA_FILE}" --outfile "${JSON_DATA_FILE}" --noprint
+python3 "${SRC_DIR}"/lywsd03mmcaccess/main.py -la convertmeasurements --infile "${RAW_DATA_FILE}" --outfile "${JSON_DATA_FILE}" \
+                                              --noprint --basedate 2025-10-28
 
 MEASURE_CHART_PATH="${SCRIPT_DIR}"/fridge_out_measurements.png
 "${SRC_DIR}"/lywsd03mmcaccess/main.py printhistory --infile "${JSON_DATA_FILE}" --outchart "${MEASURE_CHART_PATH}" --noprint

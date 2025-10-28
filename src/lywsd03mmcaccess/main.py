@@ -347,6 +347,16 @@ def process_convert_measurements(args):
 
     data_list = read_list(input_file)
 
+    base_date = None
+    if args.basedate:
+        try:
+            base_datetime = datetime.datetime.strptime(args.basedate, "%Y-%m-%d")
+            base_date = base_datetime.date()
+        except ValueError:
+            _LOGGER.warning("unable to convert base date '%s'", args.basedate)
+    if base_date is None:
+        base_date = datetime.date.today()
+
     hour_offset = 0
     recent_date_data = None
     out_list = []
@@ -359,7 +369,7 @@ def process_convert_measurements(args):
         hum_content = item_elements[5]
         batt_content = item_elements[7]
 
-        converted_date = convert_to_datetime(date_content)
+        converted_date = convert_to_datetime(date_content, base_date)
         date_data = converted_date + datetime.timedelta(hours=hour_offset)
         if recent_date_data is not None and recent_date_data > date_data:
             hour_offset += 24
@@ -382,14 +392,13 @@ def process_convert_measurements(args):
         write_object(out_list, output_file, indent=2)
 
 
-def convert_to_datetime(date_string):
+def convert_to_datetime(date_string, base_date: datetime.date):
     ## format codes: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 
     ## example: [23:03:52.888767] measurement: Temperature: 23.25C Humidity: 61% Battery: 77%
     ret_date = datetime.datetime.strptime(date_string, "%H:%M:%S.%f")
     time_obj = ret_date.time()
-    date_obj = datetime.date.today()
-    return datetime.datetime.combine(date_obj, time_obj)
+    return datetime.datetime.combine(base_date, time_obj)
 
 
 # =======================================================================
@@ -499,6 +508,13 @@ def prepare_parser():
         action="store",
         required=False,
         help="Path to output JSON",
+    )
+    subparser.add_argument(
+        "--basedate",
+        action="store",
+        required=False,
+        default="",
+        help="Set measurements base date, format: Y-m-d",
     )
     subparser.add_argument("--noprint", action="store_true", required=False, help="Do not print raw data")
 

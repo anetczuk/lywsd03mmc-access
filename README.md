@@ -251,15 +251,17 @@ options:
 
 ```
 usage: python3 -m lywsd03mmcaccess.main convertmeasurements
-       [-h] --infile INFILE [--outfile OUTFILE] [--noprint]
+       [-h] --infile INFILE [--outfile OUTFILE] [--basedate BASEDATE]
+       [--noprint]
 
 convert measurements list to JSON
 
 options:
-  -h, --help         show this help message and exit
-  --infile INFILE    Path to measurements file (default: None)
-  --outfile OUTFILE  Path to output JSON (default: None)
-  --noprint          Do not print raw data (default: False)
+  -h, --help           show this help message and exit
+  --infile INFILE      Path to measurements file (default: None)
+  --outfile OUTFILE    Path to output JSON (default: None)
+  --basedate BASEDATE  Set measurements base date, format: Y-m-d (default: )
+  --noprint            Do not print raw data (default: False)
 ```
 
 <!-- insertend -->
