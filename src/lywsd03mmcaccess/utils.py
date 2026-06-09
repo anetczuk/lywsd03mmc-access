@@ -17,7 +17,6 @@ from collections.abc import Iterable
 import pytz
 from appdirs import user_data_dir
 
-
 _LOGGER = logging.getLogger(__name__)
 
 

@@ -24,7 +24,7 @@ able to store history of measurements.
 Every history entry consists of: 
 - entry index,
 - entry timestamp,
-- maximum and minimum tempreature,
+- maximum and minimum temperature,
 - maximum and minimum humidity.
 
 Min and max values are designated in the range on one hour, so history of two full days consists of 48 entries. 
@@ -115,7 +115,7 @@ Temperature and humidity measurements in fridge is shown in following chart:
 
 Full log is accessible [here](examples/data/fridge_in_measurements.txt).
 
-Sensor was put into fridge just after second measurement. Target temperature is reached rougly after **60 minutes**.
+Sensor was put into fridge just after second measurement. Target temperature is reached roughly after **60 minutes**.
 On humidity chart there is sudden value drop and then curve takes sinusoidal shape.
 
 #### Sensor stability
@@ -282,7 +282,9 @@ day or twice a week.
 Installation of package can be done by:
  - to install package from downloaded ZIP file execute: `pip3 install --user -I file:lywsd03mmc-access-master.zip#subdirectory=src`
  - to install package directly from GitHub execute: `pip3 install --user -I git+https://github.com/anetczuk/lywsd03mmc-access.git#subdirectory=src`
- - uninstall: `pip3 uninstall lywsd03mmcaccess`
+ - installation from local repository root directory: `pip3 install --user ./src`
+ 
+To uninstall run: `pip3 uninstall lywsd03mmcaccess`
 
 Installation for development:
  - `install-deps.sh` to install package dependencies only (`requirements.txt`)
@@ -309,6 +311,7 @@ In case of pull requests please run `process-all.sh` before the request.
 
 ## License
 
+<!-- insertstart include="LICENSE" pre="\n```\n" post="```\n" -->
 ```
 BSD 3-Clause License
 
@@ -339,3 +342,4 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
+<!-- insertend -->

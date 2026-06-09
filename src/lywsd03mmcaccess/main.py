@@ -32,7 +32,6 @@ from lywsd03mmcaccess import logger
 from lywsd03mmcaccess.io import read_json, write_object, read_list
 from lywsd03mmcaccess.thermometeraccess import ThermometerAccess, pretty_measurement, current_timezone
 
-
 if __name__ == "__main__":
     _LOGGER = logging.getLogger("lywsd03mmcaccess.main")
 else:
@@ -49,14 +48,14 @@ def process_info(args):
         dev_time_data = device.client.time
         dev_time = dev_time_data[0]
         dev_tz_offset = dev_time_data[1]
-        print("device time:           ", dev_time.astimezone(tz=datetime.timezone.utc))
+        print("device time:           ", dev_time.astimezone(tz=datetime.UTC))
         dev_time_timestamp = int(dev_time.timestamp())
         print("device timestamp:      ", dev_time_timestamp)
         print("device up time:        ", datetime.timedelta(seconds=dev_time_timestamp))
         print("device tz offset:      ", dev_tz_offset)
         print("client tz offset:      ", device.client.tz_offset)
-        print("device start time:     ", device.start_time)  ## last bootup
-        print("device current time:   ", device.get_device_current_time())  ## last bootup
+        print("device start time:     ", device.start_time)  ## last boot-up
+        print("device current time:   ", device.get_device_current_time())  ## last boot-up
         print("measurement:           ", device.get_current_measurements())
         print("units:                 ", device.client.units)
         print("comfort levels:        ", device.get_comfort_levels())

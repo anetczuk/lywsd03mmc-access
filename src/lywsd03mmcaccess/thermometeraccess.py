@@ -17,7 +17,6 @@ import contextlib
 from lywsd03mmc import Lywsd03mmcClient
 from lywsd02.client import UUID_DATA
 
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -43,13 +42,13 @@ class ThermometerAccess:
     def start_time(self):
         utc_start_time = self.client.start_time - datetime.timedelta(hours=self.client.tz_offset)
         ## 'replace' does not convert datetime (does not change internal timestamp)
-        utc_start_time = utc_start_time.replace(tzinfo=datetime.timezone.utc)
+        utc_start_time = utc_start_time.replace(tzinfo=datetime.UTC)
         return utc_start_time.astimezone(tz=self.tzinfo)
 
     def get_device_current_time(self):
         dev_time = self.client.time[0]
         dev_time = dev_time.replace(tzinfo=self.tzinfo)
-        dev_uptime = dev_time - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        dev_uptime = dev_time - datetime.datetime(1970, 1, 1, tzinfo=datetime.UTC)
         curr_time = self.start_time + dev_uptime
         return curr_time.replace(tzinfo=self.tzinfo)
 
@@ -182,7 +181,7 @@ class ThermometerAccess:
 
 
 def current_timezone():
-    return datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
+    return datetime.datetime.now(datetime.UTC).astimezone().tzinfo
 
 
 class ThermometerListener:
@@ -206,7 +205,7 @@ class ThermometerListener:
     def _notified_data(self, data):
         self.client._process_sensor_data(data)
         recent = self.client._data
-        curr_time = datetime.datetime.now(datetime.timezone.utc)
+        curr_time = datetime.datetime.now(datetime.UTC)
         message = pretty_measurement(recent)
         # ruff: noqa: T201
         print("received:", curr_time, message)

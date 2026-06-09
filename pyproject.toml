@@ -1,0 +1,69 @@
+[project]
+name = "lywsd03mmcaccess"
+version = "1.0.1"
+description = "access Xiaomi Mi Temperature and Humidity Monitor 2 (LYWSD03MMC) device"
+keywords = ["lywsd03mmc", "Xiaomi Mi Temperature and Humidity Monitor 2"]
+readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [
+    ## separate 'name' and 'email' hack to fill "Author:" and "Author-email:" fields
+    { name = "Arkadiusz Netczuk" }, { email = "dev.arnet@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "appdirs",
+    "pytz",
+    "lywsd03mmc",
+    "matplotlib"
+]
+
+[project.urls]
+Homepage = "https://github.com/anetczuk/lywsd03mmc-accessr"
+Repository = "https://github.com/anetczuk/lywsd03mmc-access"
+
+[project.optional-dependencies]
+dev = [
+    ### dependencies for "tools" scripts
+
+    "xmltodict",    ## for mdpreproc.py
+
+    "black",
+    "pycodestyle",
+    "flake8",
+    "pylint",
+    "ruff",
+    "complexipy",
+    "bandit",
+    "codespell",
+    "shellcheck_py",
+    "pydocstyle",
+    "mypy",
+    "coverage",             ## for coverage.sh
+    "mdlinkscheck",
+
+    ## for profiling (tools/profiler.sh)
+    "pyprof2calltree",   
+    "snakeviz",
+    "mtprof",
+    "viztracer",
+]
+
+#[project.scripts]
+#myprogramexec = "myprogrampkg.main:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["lywsd03mmcaccess*"]
+
+#[tool.setuptools.package-data]
+#myprogramexec = [
+#    "ui/*.ui",
+#]
+
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"

@@ -28,7 +28,6 @@ import re
 import sys
 import unittest
 
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # src_dir = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
@@ -109,7 +108,7 @@ if __name__ == "__main__":
         default=0,
         help="Repeat tests given number of times",
     )
-    parser.add_argument("-ut", "--untilfailure", action="store_true", help="Run tests in loop until failure")
+    parser.add_argument("-uf", "--untilfailure", action="store_true", help="Run tests in loop until failure")
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
 
     args = parser.parse_args()
@@ -137,6 +136,7 @@ if __name__ == "__main__":
             if test_result.wasSuccessful() is False:
                 sys.exit(1)
             print("\n")
+
     elif tests_repeats > 0:
         for counter in range(1, tests_repeats + 1):
             print("Tests iteration:", counter)
@@ -145,6 +145,7 @@ if __name__ == "__main__":
             if test_result.wasSuccessful() is False:
                 sys.exit(1)
             print("\n")
+
     else:
         suite = get_test_cases(args.run_test)
         test_result = unittest.TextTestRunner(verbosity=verbosity).run(suite)

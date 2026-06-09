@@ -11,7 +11,6 @@ import os
 import sys
 from logging import handlers
 
-
 SCRIPT_DIR = os.path.dirname(__file__)
 output_file = None
 
